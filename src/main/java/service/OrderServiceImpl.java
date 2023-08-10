@@ -109,8 +109,8 @@ public class OrderServiceImpl implements OrderService {
         order.setLaborCostPerSquareFoot(product.getLaborCostPerSquareFoot());
         order.setMaterialCost(order.calculateMaterialCost());
         order.setLaborCost(order.calculateLaborCost());
-        order.setTax(order.calculateTax(tax.getTaxRate()));
-        order.setTotal(order.calculateTotal());
+        order.setTax(order.calculateTax(tax));
+        order.setTotal(order.calculateTotal(tax));
     }
 
     @Override
