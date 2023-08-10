@@ -141,12 +141,12 @@ public class Order {
         return area.multiply(laborCostPerSquareFoot);
     }
 
-    public BigDecimal calculateTax(BigDecimal taxRate) {
+    public BigDecimal calculateTax(Tax tax) {
         BigDecimal sum = calculateMaterialCost().add(calculateLaborCost());
-        return sum.multiply(this.taxRate.divide(new BigDecimal("100")));
+        return sum.multiply(tax.getTaxRate().divide(new BigDecimal("100")));
+    }
+    public BigDecimal calculateTotal(Tax tax) {
+        return calculateMaterialCost().add(calculateLaborCost()).add(calculateTax(tax));
     }
 
-    public BigDecimal calculateTotal() {
-        return calculateMaterialCost().add(calculateLaborCost()).add(calculateTax(tax.getTaxRate()));
-    }
 }
