@@ -1,4 +1,6 @@
 package dao;
 
-public abstract class OrderDaoImpl  implements  OrderDao{
+// Implement
+public class OrderDaoImpl implements OrderDao {
+
 }
