@@ -7,7 +7,7 @@ import java.util.List;
 // Tax DAO
 public interface TaxDao {
 
-    public Tax getTaxByState(String state) {// comment
+    public Tax getTaxByState(String state) {// comment.
         // Code to retrieve tax by state
         return null;
     }
