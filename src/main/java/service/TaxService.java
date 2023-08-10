@@ -3,5 +3,6 @@ package service;
 import modelDTO.Tax;
 
 public interface TaxService {
-    Tax getTaxByState(String state);
+
+    public Tax getTaxByState(String state);
 }
