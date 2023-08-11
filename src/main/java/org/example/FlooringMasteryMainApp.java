@@ -1,14 +1,12 @@
 package org.example;
 
 import controller.FlooringMasteryController;
+import view.MenuView;
 
-/**
- * Hello world!
- *
- */
 public class FlooringMasteryMainApp {
     public static void main(String[] args) {
-    FlooringMasteryController controller = new FlooringMasteryController();
-    controller.run();
+        MenuView menuView = new MenuView();
+        FlooringMasteryController controller = new FlooringMasteryController(menuView);
+        controller.run();
     }
 }
