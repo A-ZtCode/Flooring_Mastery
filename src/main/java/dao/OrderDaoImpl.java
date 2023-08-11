@@ -6,15 +6,15 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class OrderDaoImpl extends OrderDao {
+public class OrderDaoImpl implements OrderDao {
 
     private final Map<Integer, Order> orders = new HashMap<>(); // in-memory storage
-    private final String FILE_PATH = "Orders_06012013.txt"; // Path to the file that contains order data
-    private final String BACKUP_PATH = FILE_PATH + ".bak"; // Backup
+    private static final String BASE_PATH = "path_to_your_OrderFiles_folder/"; // Path to the file that contains order data
+    private final String BACKUP_PATH = BASE_PATH + ".bak"; // Backup
 
     public OrderDaoImpl() {
         // Load orders into the in-memory map during instantiation
-        loadOrdersFromFile().forEach(order -> orders.put(order.getOrderId(), order));
+        loadOrdersFromFile().forEach(order -> orders.put(order.getOrderById(), order));
     }
 
     @Override
@@ -132,60 +132,60 @@ public class OrderDaoImpl extends OrderDao {
         return new Date(); // Placeholder
     }
 
-    // Helper method to save orders to the file
-    private void saveOrdersToFile() {
-        backupFile();
-        try (FileWriter writer = new FileWriter(FILE_PATH)) {
-            for (Order order : orders.values()) {
-                // Format the order data into a CSV format and write to the file
-                String line = String.format("%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s%n",
-                        order.getOrderId(), order.getCustomerName(), order.getState(), order.getTaxRate(),
-                        order.getProductType(), order.getArea(), order.getCostPerSquareFoot(),
-                        order.getLaborCostPerSquareFoot(), order.getMaterialCost(), order.getLaborCost(),
-                        order.getTax(), order.getTotal(), formatDate((Date) order.getOrderDate()));
-                writer.write(line);
+        // Helper method to save orders to the file
+        private void saveOrdersToFile(Date orderDate, List<Order> orders) {
+            backupFile();
+            String filePath = BASE_PATH + generateOrderFileName(orderDate);
+            try (FileWriter writer = new FileWriter(filePath)) {
+                writer.write("OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total\n"); // header
+                for (Order order : orders) {
+                            order.getOrderId(), order.getCustomerName(), order.getState(), order.getTaxRate(),
+                            order.getProductType(), order.getArea(), order.getCostPerSquareFoot(),
+                            order.getLaborCostPerSquareFoot(), order.getMaterialCost(), order.getLaborCost(),
+                            order.getTax(), order.getTotal(), formatDate((Date) order.getOrderDate()));
+                }
+            } catch (IOException ex) {
+                throw new DaoException("Error writing orders to file.", ex);
+                restoreBackup();  // if there's an error, restore from backup
             }
-        } catch (IOException ex) {
-            System.err.println("Error writing orders to file: " + ex.getMessage());
-            restoreBackup();  // if there's an error, restore from backup
         }
-    }
 
-    // Backup the current data file
-    private void backupFile() {
-        File sourceFile = new File(FILE_PATH);
-        File backupFile = new File(BACKUP_PATH);
-        try (FileInputStream fis = new FileInputStream(sourceFile);
-             FileOutputStream fos = new FileOutputStream(backupFile)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
+        // Backup the current data file
+        private void backupFile() {
+            File sourceFile = new File(FILE_PATH);
+            File backupFile = new File(BACKUP_PATH);
+            try (FileInputStream fis = new FileInputStream(sourceFile);
+                 FileOutputStream fos = new FileOutputStream(backupFile)) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException ex) {
+                System.err.println("Error creating backup: " + ex.getMessage());
             }
-        } catch (IOException ex) {
-            System.err.println("Error creating backup: " + ex.getMessage());
         }
-    }
 
-    // Restore from the backup file
-    private void restoreBackup() {
-        File backupFile = new File(BACKUP_PATH);
-        File sourceFile = new File(FILE_PATH);
-        try (FileInputStream fis = new FileInputStream(backupFile);
-             FileOutputStream fos = new FileOutputStream(sourceFile)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
+        // Restore from the backup file
+        private void restoreBackup() {
+            File backupFile = new File(BACKUP_PATH);
+            File sourceFile = new File(FILE_PATH);
+            try (FileInputStream fis = new FileInputStream(backupFile);
+                 FileOutputStream fos = new FileOutputStream(sourceFile)) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException ex) {
+                System.err.println("Error restoring backup: " + ex.getMessage());
             }
-        } catch (IOException ex) {
-            System.err.println("Error restoring backup: " + ex.getMessage());
         }
-    }
 
-    // Helper method to format a date into string (format: MM-DD-YYYY)
-    private String formatDate(Date date) {
-        // Implement date formatting logic
-        return "MM-DD-YYYY"; // Placeholder
+        // Helper method to format a date into string (format: MM-DD-YYYY)
+        private String formatDate(Date date) {
+            // Implement date formatting logic
+            return "MM-DD-YYYY"; // Placeholder
+        }
     }
 }

@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
 
     // Private helper methods for better modularity and readability
     private void validateProductType(String productType) {
-        if (ProductDao.getProductByType(productType) == null) {
+        if (productDao.getProductByType(productType) == null) {
             throw new ServiceException("Invalid product type!");
         }
     }
@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void calculateOrderCosts(Order order) {
-        Product product = ProductDao.getProductByType(order.getProductType());
+        Product product = productDao.getProductByType(order.getProductType());
         Tax tax = taxDao.getTaxByState(order.getState());
 
         order.setCostPerSquareFoot(product.getCostPerSquareFoot());

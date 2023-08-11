@@ -28,7 +28,7 @@ public class ProductDaoImpl implements ProductDao {
      */
     public ProductDaoImpl() {
         loadProductsFromFile();
-    } // erase this comment.
+    } // e
 
     /**
      * Fetches a product from in-memory storage based on product type.
