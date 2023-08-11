@@ -8,13 +8,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
 public class TaxDaoImpl implements TaxDao {
 
+    private final Map<String, Tax> taxes = new HashMap<>(); // in-memory storage
     private final String FILE_PATH = "taxes.txt"; // Name of the file that contains tax data
+
 
     @Override
     public Tax getTaxByState(String state) {
