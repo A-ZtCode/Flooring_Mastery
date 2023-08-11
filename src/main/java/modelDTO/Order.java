@@ -151,13 +151,14 @@ public class Order {
     }
 
     public Integer getOrderId() {
-        return null;
+        return orderNumber;
     }
 
     public void setOrderId(int nextOrderId) {
+        this.orderNumber= orderNumber;
     }
 
-    public Object getOrderDate() {
-        return null;
+    public Integer getOrderDate() {
+        return orderNumber;
     }
 }
