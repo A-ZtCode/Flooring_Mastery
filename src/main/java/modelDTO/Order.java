@@ -1,6 +1,7 @@
 package modelDTO;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class Order {
     private Integer orderNumber;
@@ -18,7 +19,7 @@ public class Order {
 
     // Constructor
 
-    public Order(Integer orderNumber, String customerName, String state, BigDecimal taxRate, String productType, BigDecimal area, BigDecimal costPerSquareFoot, BigDecimal laborCostPerSquareFoot, BigDecimal materialCost, BigDecimal laborCost, BigDecimal tax, BigDecimal total) {
+    public Order(Integer orderNumber, String customerName, String state, BigDecimal taxRate, String productType, BigDecimal area, BigDecimal costPerSquareFoot, BigDecimal laborCostPerSquareFoot, BigDecimal materialCost, BigDecimal laborCost, BigDecimal tax, BigDecimal total, Date orderDate) {
         this.orderNumber = orderNumber;
         this.customerName = customerName;
         this.state = state;
@@ -149,4 +150,14 @@ public class Order {
         return calculateMaterialCost().add(calculateLaborCost()).add(calculateTax(tax));
     }
 
+    public Integer getOrderId() {
+        return null;
+    }
+
+    public void setOrderId(int nextOrderId) {
+    }
+
+    public Object getOrderDate() {
+        return null;
+    }
 }
