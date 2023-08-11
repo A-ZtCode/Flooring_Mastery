@@ -28,4 +28,13 @@ public class OrderDao {
         // Code to retrieve order by ID
         return null;
     }
+
+    public List<Order> searchOrdersByName(String customerName) {
+    }
+
+    public List<Order> searchOrdersByProductType(String productType) {
+    }
+
+    public List<Order> searchOrdersByState(String state) {
+    }
 }
