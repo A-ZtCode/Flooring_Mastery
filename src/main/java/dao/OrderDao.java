@@ -5,15 +5,18 @@ import modelDTO.Order;
 import java.util.Date;
 import java.util.List;
 
-public class OrderDao {
+public abstract class OrderDao {
 
-    public void addOrder(Order order) {
+    public Order addOrder(Order order) {
         // Code to add order
+        return order;
     }
 
     public void editOrder(Order order) {
         // Code to edit order
     }
+
+    public abstract void updateOrder(Order order);
 
     public void removeOrder(int orderId) {
         // Code to remove order by ID
@@ -30,11 +33,14 @@ public class OrderDao {
     }
 
     public List<Order> searchOrdersByName(String customerName) {
+        return null;
     }
 
     public List<Order> searchOrdersByProductType(String productType) {
+        return null;
     }
 
     public List<Order> searchOrdersByState(String state) {
+        return null;
     }
 }
