@@ -158,4 +158,8 @@ public class Order {
     public BigDecimal calculateTotal(Tax tax) {
         return calculateMaterialCost().add(calculateLaborCost()).add(calculateTax(tax));
     }
+
+    public Order() {
+        // This is a default constructor
+    }
 }

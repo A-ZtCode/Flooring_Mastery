@@ -54,7 +54,7 @@ public class OrderServiceTest {
     @Test
     public void testGetOrdersByDate() {
         Date testDate = new Date(); // Use current date for this test
-        Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Tile", new BigDecimal("300"), new BigDecimal("4.0"), new BigDecimal("5.0"), new BigDecimal("1200"), new BigDecimal("1500"), new BigDecimal("168.75"), new BigDecimal("2868.75"), testDate);
+        Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Wood", new BigDecimal("300"), new BigDecimal("4.0"), new BigDecimal("5.0"), new BigDecimal("1200"), new BigDecimal("1500"), new BigDecimal("168.75"), new BigDecimal("2868.75"), testDate);
         when(orderDao.getOrdersByDate(testDate)).thenReturn(Collections.singletonList(dummyOrder));
 
         List<Order> result = orderService.getOrdersByDate(testDate);
@@ -157,6 +157,118 @@ public class OrderServiceTest {
         assertEquals("Tile", result.get(0).getProductType());
         verify(orderDao, times(1)).searchOrdersByProductType("Tile");
     }
+
+    // Test methods for validateOrderData
+    @Test
+    public void testValidateNullOrder() {
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            orderService.validateOrderData(null);
+        });
+
+        String expectedMessage = "Order cannot be null!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void testValidateOrderWithEmptyCustomerName() {
+        Order orderWithEmptyName = new Order();
+        orderWithEmptyName.setCustomerName("");
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            orderService.validateOrderData(orderWithEmptyName);
+        });
+
+        String expectedMessage = "Customer name cannot be empty!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void testValidateOrderWithNullState() {
+        Order orderWithNullState = new Order();
+        orderWithNullState.setCustomerName("Jane");
+        orderWithNullState.setState(null);
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            orderService.validateOrderData(orderWithNullState);
+        });
+
+        String expectedMessage = "State cannot be empty!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void testValidateOrderWithEmptyProductType() {
+        Order orderWithEmptyProductType = new Order();
+        orderWithEmptyProductType.setCustomerName("Jane");
+        orderWithEmptyProductType.setState("TX");
+        orderWithEmptyProductType.setProductType("");
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            orderService.validateOrderData(orderWithEmptyProductType);
+        });
+
+        String expectedMessage = "Product type cannot be empty!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    // Test methods for addOrder
+    @Test
+    public void testAddNullOrder() {
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            orderService.addOrder(null);
+        });
+
+        String expectedMessage = "Order cannot be null!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    // Test methods for editOrder
+    @Test
+    public void testEditNullOrder() {
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            orderService.editOrder(null);
+        });
+
+        String expectedMessage = "Order cannot be null!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void testEditNonExistentOrder() {
+        Order nonExistentOrder = new Order();
+        nonExistentOrder.setOrderNumber(999); // Assuming this ID does not exist in the DAO
+        when(orderDao.getOrderById(999)).thenReturn(null);
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            orderService.editOrder(nonExistentOrder);
+        });
+
+        String expectedMessage = "Order not found!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    // Test methods for removeOrder
+    @Test
+    public void testRemoveNonExistentOrder() {
+        int nonExistentOrderId = 999; // Assuming this ID does not exist in the DAO
+        when(orderDao.getOrderById(999)).thenReturn(null);
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            orderService.removeOrder(nonExistentOrderId);
+        });
+
+        String expectedMessage = "Order not found!";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
 
     /**
      * Test the behavior of the addOrder method when provided an order with a zero area.
@@ -323,6 +435,7 @@ public class OrderServiceTest {
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
+
 
 
 }

@@ -7,6 +7,7 @@ import modelDTO.Order;
 import modelDTO.Product;
 import modelDTO.Tax;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -33,15 +34,20 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void editOrder(Order order) {
-        Order existingOrder = orderDao.getOrderById(order.getOrderNumber());
-        if (existingOrder == null) {
-            throw new ServiceException("Order not found!");
+        try {
+            Order existingOrder = orderDao.getOrderById(order.getOrderNumber());
+            if (existingOrder == null) {
+                throw new ServiceException("Order not found!");
+            }
+            validateProductType(order.getProductType());
+            validateState(order.getState());
+            calculateOrderCosts(order);
+            orderDao.editOrder(order);
+        } catch (OrderNotFoundException e) {
+            throw new ServiceException("Failed to edit the order.", e);
         }
-        validateProductType(order.getProductType());
-        validateState(order.getState());
-        calculateOrderCosts(order);
-        orderDao.editOrder(order);
     }
+
 
     @Override
     public void removeOrder(int orderId) {
@@ -111,6 +117,31 @@ public class OrderServiceImpl implements OrderService {
         order.setTax(order.calculateTax(tax));
         order.setTotal(order.calculateTotal(tax));
     }
+
+    @Override
+    public BigDecimal calculateTaxForOrder(Order order) {
+        // Get the tax details based on the order's state
+        Tax tax = taxDao.getTaxByState(order.getState());
+        if (tax == null) {
+            throw new ServiceException("Invalid state for tax calculation!");
+        }
+
+        // Calculate and return the tax amount for the order
+        return order.calculateTax(tax);
+    }
+
+    @Override
+    public BigDecimal calculateCostForProductType(Order order) {
+        // Get the product details based on the order's product type
+        Product product = productDao.getProductByType(order.getProductType());
+        if (product == null) {
+            throw new ServiceException("Invalid product type for cost calculation!");
+        }
+
+        // Calculate and return the total cost based on product type
+        return order.getArea().multiply(product.getCostPerSquareFoot());
+    }
+
 
     private void validateStringInput(String input, String errorMessage) {
         if (input == null || input.trim().isEmpty()) {
