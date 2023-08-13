@@ -1,9 +1,7 @@
 package dao;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-import dao.TaxDao;
 import modelDTO.Tax;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,17 +9,19 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class TaxDaoImplTest {
+public class TaxDaoTest {
 
     private TaxDao taxDao;
 
     @BeforeEach
     public void setUp() {
+        // Create an instance of the TaxDao implementation for testing
         taxDao = new TaxDaoImpl();
     }
 
     @Test
     public void testGetTaxByState() {
+        // Test fetching tax information by state abbreviation
         Tax tax = taxDao.getTaxByState("OH");
         assertNotNull(tax);
         assertEquals("OH", tax.getStateAbbreviation());
@@ -31,6 +31,7 @@ public class TaxDaoImplTest {
 
     @Test
     public void testGetAllTaxes() {
+        // Test retrieving all tax information
         List<Tax> taxes = taxDao.getAllTaxes();
         assertNotNull(taxes);
         assertTrue(taxes.size() > 0);
@@ -38,6 +39,7 @@ public class TaxDaoImplTest {
 
     @Test
     public void testAddTax() {
+        // Test adding a new tax entry
         Tax newTax = new Tax("TX", "Texas", new BigDecimal("8.00"));
         taxDao.addTax(newTax);
 
@@ -50,6 +52,7 @@ public class TaxDaoImplTest {
 
     @Test
     public void testUpdateTax() {
+        // Test updating an existing tax entry
         Tax updatedTax = new Tax("OH", "Ohio", new BigDecimal("7.00"));
         assertTrue(taxDao.updateTax(updatedTax));
 
@@ -62,10 +65,11 @@ public class TaxDaoImplTest {
 
     @Test
     public void testRemoveTax() {
+        // Test removing a tax entry by state abbreviation
         assertTrue(taxDao.removeTaxByState("PA"));
         assertNull(taxDao.getTaxByState("PA"));
     }
 
-    // Add more test cases as needed
+
 
 }
