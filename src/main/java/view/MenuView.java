@@ -63,7 +63,7 @@ public class MenuView {
     // Format an order for display
     private String orderToString(Order order) {
         return String.format("Order #%d - Customer: %s, State: %s, Total: $%.2f",
-                order.getOrderId(), order.getCustomerName(), order.getState(), order.getTotal());
+                order.getOrderNumber(), order.getCustomerName(), order.getState(), order.getTotal());
     }
 
     // Format a product for display
