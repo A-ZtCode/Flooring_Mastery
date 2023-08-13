@@ -38,7 +38,7 @@ public class TaxServiceImpl implements TaxService {
     public void editTax(Tax tax) {
         // Validating the tax data before editing
         if (validateTaxData(tax)) {
-            taxDao.editTax(tax);
+            taxDao.updateTax(tax);
         } else {
             throw new ServiceException("Invalid tax data provided.");
         }
@@ -47,7 +47,7 @@ public class TaxServiceImpl implements TaxService {
     @Override
     public void removeTax(String stateAbbreviation) {
         // Removing tax details for a specific state
-        taxDao.removeTax(stateAbbreviation);
+        taxDao.removeTaxByState(stateAbbreviation);
     }
 
     @Override

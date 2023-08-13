@@ -38,7 +38,7 @@ public class ProductServiceImpl implements ProductService{
     public void editProduct(Product product) {
         // Validating the product data before editing
         if (validateProductData(product)) {
-            productDao.editProduct(product);
+            productDao.updateProduct(product);
         } else {
             throw new ServiceException("Invalid product data provided.");
         }
@@ -47,7 +47,7 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public void removeProduct(String productType) {
         // Removing a product by its type
-        productDao.removeProduct(productType);
+        productDao.removeProductByType(productType);
     }
 
     @Override
