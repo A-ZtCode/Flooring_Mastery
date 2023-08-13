@@ -96,4 +96,7 @@ public class MenuView {
         String input = scanner.nextLine();
         return Integer.parseInt(input);
     }
+
+    public void displayMessage(String s) {
+    }
 }

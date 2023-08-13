@@ -59,12 +59,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order getOrderById(int orderId) {
-        return null;
+        return orderDao.getOrderById(orderId);
     }
-
     @Override
     public List<Order> getAllOrders() {
-        return null;
+        return orderDao.getAllOrders();
     }
 
     @Override
@@ -113,27 +112,26 @@ public class OrderServiceImpl implements OrderService {
         order.setTotal(order.calculateTotal(tax));
     }
 
+    private void validateStringInput(String input, String errorMessage) {
+        if (input == null || input.trim().isEmpty()) {
+            throw new ServiceException(errorMessage);
+        }
+    }
     @Override
     public List<Order> searchOrdersByName(String customerName) {
-        if (customerName == null || customerName.trim().isEmpty()) {
-            throw new ServiceException("Customer name cannot be empty!");
-        }
+        validateStringInput(customerName, "Customer name cannot be empty!");
         return orderDao.searchOrdersByName(customerName);
     }
 
     @Override
     public List<Order> searchOrdersByState(String state) {
-        if (state == null || state.trim().isEmpty()) {
-            throw new ServiceException("State cannot be empty!");
-        }
+        validateStringInput(state, "State cannot be empty!");
         return orderDao.searchOrdersByState(state);
     }
 
     @Override
     public List<Order> searchOrdersByProductType(String productType) {
-        if (productType == null || productType.trim().isEmpty()) {
-            throw new ServiceException("Product type cannot be empty!");
-        }
+        validateStringInput(productType, "Product type cannot be empty!");
         return orderDao.searchOrdersByProductType(productType);
     }
 }
