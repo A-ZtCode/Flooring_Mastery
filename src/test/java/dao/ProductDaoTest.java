@@ -1,28 +1,27 @@
 package dao;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-import dao.ProductDao;
 import modelDTO.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 
-public class ProductDaoImplTest {
+public class ProductDaoTest {
 
     private ProductDao productDao;
 
     @BeforeEach
     public void setUp() {
+        // Create an instance of the ProductDao implementation for testing
         productDao = new ProductDaoImpl();
     }
 
     @Test
     public void testGetProductByType() {
+        // Test fetching product information by product type
         Product product = productDao.getProductByType("Tile");
         assertNotNull(product);
         assertEquals("Tile", product.getProductType());
@@ -32,6 +31,7 @@ public class ProductDaoImplTest {
 
     @Test
     public void testGetAllProducts() {
+        // Test retrieving all product information
         List<Product> products = productDao.getAllProducts();
         assertNotNull(products);
         assertTrue(products.size() > 0);
@@ -39,6 +39,7 @@ public class ProductDaoImplTest {
 
     @Test
     public void testAddProduct() {
+        // Test adding a new product entry
         Product newProduct = new Product("Carpet", new BigDecimal("2.25"), new BigDecimal("2.10"));
         productDao.addProduct(newProduct);
 
@@ -51,6 +52,7 @@ public class ProductDaoImplTest {
 
     @Test
     public void testUpdateProduct() {
+        // Test updating an existing product entry
         Product updatedProduct = new Product("Tile", new BigDecimal("3.75"), new BigDecimal("4.30"));
         assertTrue(productDao.updateProduct(updatedProduct));
 
@@ -63,10 +65,11 @@ public class ProductDaoImplTest {
 
     @Test
     public void testRemoveProduct() {
+        // Test removing a product entry by product type
         assertTrue(productDao.removeProductByType("Laminate"));
         assertNull(productDao.getProductByType("Laminate"));
     }
 
-    // Add more test cases as needed
+
 
 }
