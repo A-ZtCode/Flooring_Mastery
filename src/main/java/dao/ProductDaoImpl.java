@@ -2,10 +2,7 @@ package dao;
 
 import modelDTO.Product;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +25,7 @@ public class ProductDaoImpl implements ProductDao {
      */
     public ProductDaoImpl() {
         loadProductsFromFile();
-    } // erase this comment.
+    } // e
 
     /**
      * Fetches a product from in-memory storage based on product type.
@@ -53,11 +50,18 @@ public class ProductDaoImpl implements ProductDao {
     @Override
     public void addProduct(Product product) {
         if (products.containsKey(product.getProductType())) {
-            throw new DaoException("Product of type " + product.getProductType() + " already exists!");
+            throw new DataPersistenceException("Product of type " + product.getProductType() + " already exists!");
         }
+        backupFile(); // Backup before adding
         products.put(product.getProductType(), product);
-        saveProductsToFile();
+        try {
+            saveProductsToFile(); // Save after adding
+        } catch (DataPersistenceException ex) {
+            restoreBackup(); // Restore backup if there's an error
+            throw ex; // Re-throw the exception
+        }
     }
+
 
     /**
      * Updates an existing product in in-memory storage and then saves to file.
@@ -105,7 +109,7 @@ public class ProductDaoImpl implements ProductDao {
                 }
             }
         } catch (IOException ex) {
-            throw new DaoException("Error reading products from file.", ex);
+            throw new DataPersistenceException("Error reading products from file.", ex);
         }
     }
 
@@ -119,9 +123,44 @@ public class ProductDaoImpl implements ProductDao {
                 writer.write(product.getProductType() + "," + product.getCostPerSquareFoot() + "," + product.getLaborCostPerSquareFoot() + "\n");
             }
         } catch (IOException ex) {
-            throw new DaoException("Error writing products to file.", ex);
+            throw new DataPersistenceException("Error writing products to file.", ex);
         }
     }
+
+    private final String BACKUP_PATH = FILE_PATH + ".bak"; // Backup
+
+    // Backup the current data file
+    private void backupFile() {
+        File sourceFile = new File(FILE_PATH);
+        File backupFile = new File(BACKUP_PATH);
+        try (FileInputStream fis = new FileInputStream(sourceFile);
+             FileOutputStream fos = new FileOutputStream(backupFile)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                fos.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException ex) {
+            throw new DataPersistenceException("Error creating backup for products.", ex);
+        }
+    }
+
+    // Restore from the backup file
+    private void restoreBackup() {
+        File backupFile = new File(BACKUP_PATH);
+        File sourceFile = new File(FILE_PATH);
+        try (FileInputStream fis = new FileInputStream(backupFile);
+             FileOutputStream fos = new FileOutputStream(sourceFile)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                fos.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException ex) {
+            throw new DataPersistenceException("Error restoring backup for products.", ex);
+        }
+    }
+
 }
 
 
