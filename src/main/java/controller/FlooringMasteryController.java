@@ -23,15 +23,15 @@ import java.time.ZonedDateTime;
 public class FlooringMasteryController {
 
     private final MenuView menuView;
-    private final OrderService orderService;
-    private final ProductService productService;
-    private final TaxService taxService;
+    private OrderService orderService = null;
+    private ProductService productService = null;
+    private TaxService taxService = null;
 
     private Date convertLocalDateToDate(LocalDate localDate) {
         ZonedDateTime zdt = localDate.atStartOfDay(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
-    private static final String EXPORT_FILE_PATH = "Backup/DataExport.txt";
+    private static final String EXPORT_FILE_PATH = "controller/Backup/DataExport.txt";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 
     public FlooringMasteryController(MenuView menuView) {
@@ -136,7 +136,7 @@ public class FlooringMasteryController {
     private void exportAllData() {
         try {
             // Ensure the Backup directory exists
-            Files.createDirectories(Paths.get("Backup"));
+            Files.createDirectories(Paths.get("controller/Backup"));
 
             // Get all the orders
             List<Order> allOrders = orderService.getAllOrders();

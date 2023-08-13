@@ -3,18 +3,14 @@ package dao;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import dao.OrderDao;
-import dao.OrderDaoImpl;
 import modelDTO.Order;
-import modelDTO.Tax;
 import service.OrderNotFoundException;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class OrderDaoImplTest {
+public class OrderDaoTest {
 
     private OrderDao orderDao;
 
@@ -88,6 +84,6 @@ public class OrderDaoImplTest {
         assertEquals(order.getTotal(), retrievedOrder.getTotal());
     }
 
-    // Add more test methods for other operations
+    
 
 }
