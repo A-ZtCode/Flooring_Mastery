@@ -159,7 +159,15 @@ public class Order {
         return calculateMaterialCost().add(calculateLaborCost()).add(calculateTax(tax));
     }
 
+
+    public Integer getOrderId() {
+        return orderNumber;
+    }
+
+    public void setOrderId(Integer orderId) {
+        this.orderNumber = orderId;
+
     public Order() {
-        // This is a default constructor
+
     }
 }
