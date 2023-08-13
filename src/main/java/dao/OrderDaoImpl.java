@@ -1,44 +1,72 @@
 package dao;
 
 import modelDTO.Order;
+import service.OrderNotFoundException;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class OrderDaoImpl extends OrderDao {
 
-    private final Map<Integer, Order> orders = new HashMap<>(); // in-memory storage
-    private final String FILE_PATH = "Orders_06012013.txt"; // Path to the file that contains order data
-    private final String BACKUP_PATH = FILE_PATH + ".bak"; // Backup
+    private final Map<Integer, Order> orders = new HashMap<>();
+    private static final String BASE_PATH = "path_to_your_project_directory/OrdersFiles/";
+
+    private String getFilePathForDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMddyyyy");
+        return BASE_PATH + "Orders_" + sdf.format(date) + ".txt";
+    }
+
+    private String getBackupFilePathForDate(Date date) {
+        return getFilePathForDate(date) + ".bak";
+    }
+
 
     public OrderDaoImpl() {
-        // Load orders into the in-memory map during instantiation
-        loadOrdersFromFile().forEach(order -> orders.put(order.getOrderId(), order));
+        File folder = new File(BASE_PATH);
+        File[] listOfFiles = folder.listFiles();
+
+        if (listOfFiles != null) {
+            for (File file : listOfFiles) {
+                if (file.isFile() && file.getName().startsWith("Orders_") && file.getName().endsWith(".txt")) {
+                    loadOrdersFromFile(parseDateFromFileName(file.getName())).forEach(order -> orders.put(order.getOrderNumber(), order));
+                }
+            }
+        }
     }
+
 
     @Override
     public Order addOrder(Order order) {
         int nextOrderId = getNextOrderId();
-        order.setOrderId(nextOrderId);
-        orders.put(nextOrderId, order); // Add order to in-memory storage
-        saveOrdersToFile(); // Save the updated orders back to the file
+        order.setOrderNumber(nextOrderId);
+        orders.put(nextOrderId, order);// Add order to in-memory storage
+        saveOrdersToFile(order.getOrderDate());   // Save the updated orders back to the file
         return order;
     }
-
     @Override
-    public void updateOrder(Order order) {
-        orders.put(order.getOrderId(), order); // Update order in in-memory storage
-        saveOrdersToFile(); // Save the updated orders back to the file
-    }
+    public void editOrder(Order order) throws OrderNotFoundException {
+        if (orders.containsKey(order.getOrderNumber())) {
+            orders.put(order.getOrderNumber(), order);  // Update order in in-memory storage
+            saveOrdersToFile(order.getOrderDate()); // Save the updated orders back to the file
+        } else {
+            // Log an error
+            System.err.println("Error: Order with ID " + order.getOrderNumber() + " not found!");
+            // Throw a custom exception
+            throw new OrderNotFoundException("Order with ID " + order.getOrderNumber() + " does not exist!");
 
+        }
+    }
     @Override
     public void removeOrder(int orderId) {
-        orders.remove(orderId);
-        saveOrdersToFile(); // Save the updated orders back to the file
+        Order order = orders.remove(orderId);
+        if (order != null) {
+            saveOrdersToFile(order.getOrderDate());  // Save the updated orders back to the file
+        }
     }
 
-    @Override
+
     public List<Order> getOrdersByDate(Date date) {
         List<Order> ordersByDate = new ArrayList<>();
         for (Order order : orders.values()) {
@@ -63,6 +91,11 @@ public class OrderDaoImpl extends OrderDao {
             }
         }
         return matchingOrders;
+    }
+
+    @Override
+    public List<Order> getAllOrders() {
+        return new ArrayList<>(orders.values());
     }
 
     @Override
@@ -96,9 +129,10 @@ public class OrderDaoImpl extends OrderDao {
     }
 
     // Helper method to load orders from the file to in-memory storage
-    private List<Order> loadOrdersFromFile() {
+    private List<Order> loadOrdersFromFile(Date date) {
         List<Order> fileOrders = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+        String filePath = getFilePathForDate(date);
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
@@ -129,63 +163,89 @@ public class OrderDaoImpl extends OrderDao {
     // Helper method to parse a date from string (format: MM-DD-YYYY)
     private Date parseDate(String dateString) {
         // Implement date parsing logic
-        return new Date(); // Placeholder
-    }
-
-    // Helper method to save orders to the file
-    private void saveOrdersToFile() {
-        backupFile();
-        try (FileWriter writer = new FileWriter(FILE_PATH)) {
-            for (Order order : orders.values()) {
-                // Format the order data into a CSV format and write to the file
-                String line = String.format("%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s%n",
-                        order.getOrderId(), order.getCustomerName(), order.getState(), order.getTaxRate(),
-                        order.getProductType(), order.getArea(), order.getCostPerSquareFoot(),
-                        order.getLaborCostPerSquareFoot(), order.getMaterialCost(), order.getLaborCost(),
-                        order.getTax(), order.getTotal(), formatDate((Date) order.getOrderDate()));
-                writer.write(line);
-            }
-        } catch (IOException ex) {
-            System.err.println("Error writing orders to file: " + ex.getMessage());
-            restoreBackup();  // if there's an error, restore from backup
+        // Placeholder implementation, you need to replace with actual parsing logic
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+            return sdf.parse(dateString);
+        } catch (Exception e) {
+            System.err.println("Error parsing date: " + e.getMessage());
+            return null;
         }
     }
+
+        // Helper method to save orders to the file
+        private void saveOrdersToFile(Date date) {
+            String filePath = getFilePathForDate(date);
+            backupFile(date);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+
+            try (FileWriter writer = new FileWriter(filePath, false)) {  // false means do not append, overwrite the file
+                writer.write("OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total,OrderDate\n"); // updated header with OrderDate
+                for (Order order : orders.values()) {
+                    writer.write(String.join(",",
+                            order.getOrderNumber().toString(),
+                            order.getCustomerName(),
+                            order.getState(),
+                            order.getTaxRate().toString(),
+                            order.getProductType(),
+                            order.getArea().toString(),
+                            order.getCostPerSquareFoot().toString(),
+                            order.getLaborCostPerSquareFoot().toString(),
+                            order.getMaterialCost().toString(),
+                            order.getLaborCost().toString(),
+                            order.getTax().toString(),
+                            order.getTotal().toString(),
+                            sdf.format(order.getOrderDate())
+                    ) + "\n");
+                }
+            } catch (IOException ex) {
+                System.err.println("Error writing orders to file: " + ex.getMessage());
+                restoreBackup(date);  // if there's an error, restore from backup
+            }
+        }
 
     // Backup the current data file
-    private void backupFile() {
-        File sourceFile = new File(FILE_PATH);
-        File backupFile = new File(BACKUP_PATH);
+    private void backupFile(Date date) {
+        File sourceFile = new File(getFilePathForDate(date));
+        File backupFile = new File(getBackupFilePathForDate(date));
         try (FileInputStream fis = new FileInputStream(sourceFile);
              FileOutputStream fos = new FileOutputStream(backupFile)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException ex) {
+                System.err.println("Error creating backup: " + ex.getMessage());
             }
-        } catch (IOException ex) {
-            System.err.println("Error creating backup: " + ex.getMessage());
+        }
+
+        // Restore from the backup file
+        private void restoreBackup(Date date) {
+            File backupFile = new File(getBackupFilePathForDate(date));
+            File sourceFile = new File(getFilePathForDate(date));
+            try (FileInputStream fis = new FileInputStream(backupFile);
+                 FileOutputStream fos = new FileOutputStream(sourceFile)) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException ex) {
+                System.err.println("Error restoring backup: " + ex.getMessage());
+            }
+        }
+
+        // Helper method to format a date into string (format: MM-DD-YYYY)
+        private Date parseDateFromFileName(String fileName) {
+            try {
+                String datePart = fileName.replace("Orders_", "").replace(".txt", "");
+                SimpleDateFormat sdf = new SimpleDateFormat("MMddyyyy");
+                return sdf.parse(datePart);
+            } catch (Exception e) {
+                System.err.println("Error parsing date from file name: " + e.getMessage());
+                return null;
+            }
         }
     }
-
-    // Restore from the backup file
-    private void restoreBackup() {
-        File backupFile = new File(BACKUP_PATH);
-        File sourceFile = new File(FILE_PATH);
-        try (FileInputStream fis = new FileInputStream(backupFile);
-             FileOutputStream fos = new FileOutputStream(sourceFile)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
-            }
-        } catch (IOException ex) {
-            System.err.println("Error restoring backup: " + ex.getMessage());
-        }
-    }
-
-    // Helper method to format a date into string (format: MM-DD-YYYY)
-    private String formatDate(Date date) {
-        // Implement date formatting logic
-        return "MM-DD-YYYY"; // Placeholder
-    }
-}

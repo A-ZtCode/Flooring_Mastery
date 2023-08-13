@@ -16,8 +16,9 @@ public class Order {
     private BigDecimal laborCost;
     private BigDecimal tax;
     private BigDecimal total;
+    private Date orderDate; // Added missing attribute
 
-    // Constructor
+    // Constructor  for all attributes
 
     public Order(Integer orderNumber, String customerName, String state, BigDecimal taxRate, String productType, BigDecimal area, BigDecimal costPerSquareFoot, BigDecimal laborCostPerSquareFoot, BigDecimal materialCost, BigDecimal laborCost, BigDecimal tax, BigDecimal total, Date orderDate) {
         this.orderNumber = orderNumber;
@@ -32,11 +33,10 @@ public class Order {
         this.laborCost = laborCost;
         this.tax = tax;
         this.total = total;
+        this.orderDate = orderDate;
     }
 
-
-    // Getters and setters for all the attributes.
-
+//    Getters, and Setters for all attributes
     public Integer getOrderNumber() {
         return orderNumber;
     }
@@ -133,6 +133,14 @@ public class Order {
         this.total = total;
     }
 
+    public Date getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate;
+    }
+
     // Methods to calculate costs and totals
     public BigDecimal calculateMaterialCost() {
         return area.multiply(costPerSquareFoot);
@@ -146,19 +154,8 @@ public class Order {
         BigDecimal sum = calculateMaterialCost().add(calculateLaborCost());
         return sum.multiply(tax.getTaxRate().divide(new BigDecimal("100")));
     }
+
     public BigDecimal calculateTotal(Tax tax) {
         return calculateMaterialCost().add(calculateLaborCost()).add(calculateTax(tax));
-    }
-
-    public Integer getOrderId() {
-        return orderNumber;
-    }
-
-    public void setOrderId(int nextOrderId) {
-        this.orderNumber= orderNumber;
-    }
-
-    public Integer getOrderDate() {
-        return orderNumber;
     }
 }

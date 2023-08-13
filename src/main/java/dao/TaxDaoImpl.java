@@ -34,8 +34,8 @@ public class TaxDaoImpl implements TaxDao {
     // Add a new tax entry
     @Override
     public Tax addTax(Tax newTax) {
-        if (taxes.containsKey(newTax.getStateAbbreviation())) {
-            throw new DaoException("Tax for the state " + newTax.getStateAbbreviation() + " already exists!");
+        if (newTax == null || newTax.getStateAbbreviation() == null || newTax.getStateName() == null) {
+            throw new DataPersistenceException("Tax data is invalid.");
         }
         taxes.put(newTax.getStateAbbreviation(), newTax); // Add tax to in-memory storage
         saveTaxesToFile(); // Save the updated taxes back to the file
@@ -45,8 +45,8 @@ public class TaxDaoImpl implements TaxDao {
     // Update an existing tax entry
     @Override
     public boolean updateTax(Tax updatedTax) {
-        if (!taxes.containsKey(updatedTax.getStateAbbreviation())) {
-            return false;  // Tax entry not found
+        if (updatedTax == null || updatedTax.getStateAbbreviation() == null || updatedTax.getStateName() == null) {
+            throw new DataPersistenceException("Tax data is invalid.");
         }
         taxes.put(updatedTax.getStateAbbreviation(), updatedTax); // Update tax in in-memory storage
         saveTaxesToFile(); // Save the updated taxes back to the file
@@ -79,7 +79,7 @@ public class TaxDaoImpl implements TaxDao {
                 }
             }
         } catch (IOException ex) {
-            System.err.println("Error reading taxes from file: " + ex.getMessage());
+            throw new DataPersistenceException("Error reading taxes from file.", ex);
         }
         return fileTaxes;
     }

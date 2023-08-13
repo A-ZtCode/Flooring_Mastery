@@ -4,6 +4,7 @@ import modelDTO.Order;
 import modelDTO.Product;
 import modelDTO.Tax;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +25,10 @@ public interface OrderService {
     List<Order> searchOrdersByName(String customerName);
     List<Order> searchOrdersByState(String state);
     List<Order> searchOrdersByProductType(String productType);
+
+    public BigDecimal calculateTaxForOrder(Order order);
+    public BigDecimal calculateCostForProductType(Order order);
+
 }
 
 
