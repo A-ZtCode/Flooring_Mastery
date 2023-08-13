@@ -158,4 +158,12 @@ public class Order {
     public BigDecimal calculateTotal(Tax tax) {
         return calculateMaterialCost().add(calculateLaborCost()).add(calculateTax(tax));
     }
+
+    public Integer getOrderId() {
+        return orderNumber;
+    }
+
+    public void setOrderId(Integer orderId) {
+        this.orderNumber = orderId;
+    }
 }
