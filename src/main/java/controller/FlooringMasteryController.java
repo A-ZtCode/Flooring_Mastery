@@ -162,11 +162,12 @@ public class FlooringMasteryController {
                         LocalDate localDateToDisplay = promptForDate();
                         Date dateToDisplay = convertLocalDateToDate(localDateToDisplay);
                         List<Order> orders = orderService.getOrdersByDate(dateToDisplay);
+
                         if(orders.isEmpty()) {
                             menuView.displayErrorMessage("No orders exist for the provided date.");
                         } else {
                             menuView.displayOrders(orders);
-                        }
+      }
                         break;
                     case 2: // Add an Order
                         Order orderToAdd = gatherOrderData();
@@ -199,9 +200,15 @@ public class FlooringMasteryController {
                     default:
                         menuView.displayErrorMessage("Invalid choice. Please try again.");
                 }
+                if (!quit) {
+                    // Pause before displaying the menu again
+                    menuView.getUserInputString("Press Enter to continue...");
+                }
+
             } catch (ServiceException e) {
                 menuView.displayErrorMessage(e.getMessage());
             }
+
         }
         System.out.println("Exiting the program.");
     }
