@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class ProductDaoTest {
+public class ProductDaoImplTest {
 
     private ProductDao productDao;
 
