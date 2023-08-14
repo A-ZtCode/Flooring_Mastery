@@ -6,3 +6,4 @@ OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborC
 5,Maria Maria,CO,2.90,Travertine,200.00,5.90,6.50,1180.00,1300.00,71.92,2551.92,12-12-2023
 6,Maria Boa,AZ,5.60,Slate,200.00,5.80,6.40,1160.00,1280.00,136.64,2576.64,12-12-2023
 7,Maria Gonza,AZ,5.60,Slate,200.00,5.80,6.40,1160.00,1280.00,136.64,2576.64,12-12-2023
+8,Tee,LA,4.45,Brick,102.00,3.95,4.50,402.90,459.00,38.35,900.25,08-14-2024

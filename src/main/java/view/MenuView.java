@@ -98,5 +98,6 @@ public class MenuView {
     }
 
     public void displayMessage(String s) {
+        System.out.println(s);
     }
 }
