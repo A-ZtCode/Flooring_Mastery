@@ -18,7 +18,7 @@ public class ProductDaoImpl implements ProductDao {
     // In-memory storage for products, using a Map for faster access based on product type.
     private final Map<String, Product> products = new HashMap<>();
     // Path to the file that contains the product data.
-    private final String FILE_PATH = "products.txt";
+    private final String FILE_PATH = "src/main/java/Products.txt";
 
     /**
      * Constructor loads products from the file into memory.
@@ -97,15 +97,23 @@ public class ProductDaoImpl implements ProductDao {
      */
     private void loadProductsFromFile() {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+            reader.readLine();  // This will skip the first line, which is the header
+
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
+
                 if (parts.length >= 3) {
-                    String productType = parts[0].trim();
-                    BigDecimal costPerSquareFoot = new BigDecimal(parts[1].trim());
-                    BigDecimal laborCostPerSquareFoot = new BigDecimal(parts[2].trim());
-                    Product product = new Product(productType, costPerSquareFoot, laborCostPerSquareFoot);
-                    products.put(productType, product);
+                    try {
+                        String productType = parts[0].trim();
+                        BigDecimal costPerSquareFoot = new BigDecimal(parts[1].trim());
+                        BigDecimal laborCostPerSquareFoot = new BigDecimal(parts[2].trim());
+                        Product product = new Product(productType, costPerSquareFoot, laborCostPerSquareFoot);
+                        products.put(productType, product);
+                    } catch (NumberFormatException e) {
+                        System.err.println("Error converting value to number from line: " + line);
+                        e.printStackTrace();
+                    }
                 }
             }
         } catch (IOException ex) {
