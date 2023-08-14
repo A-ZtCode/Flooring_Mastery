@@ -272,6 +272,7 @@ public class OrderDaoImpl extends OrderDao {
         private void saveOrdersToFile(Date date) {
             String filePath = getFilePathForDate(date);
 
+            backupFile(date);
 
             SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
 

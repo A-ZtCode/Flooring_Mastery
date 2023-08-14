@@ -220,6 +220,7 @@ public class FlooringMasteryController {
                         break;
                     case 5: // Export All Data
                         exportAllData();
+
                         menuView.displayMessage("Data exported successfully.");
                         break;
                     case 6: // Quit
