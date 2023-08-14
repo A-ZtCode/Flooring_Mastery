@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class TaxServiceTest {
+public class TaxServiceImplTest {
     /**
      * Mocking the TaxDao to simulate interactions with the database
      */
