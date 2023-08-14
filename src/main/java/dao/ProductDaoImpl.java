@@ -25,12 +25,12 @@ public class ProductDaoImpl implements ProductDao {
      */
     public ProductDaoImpl() {
         loadProductsFromFile();
-    } // e
+    }
 
     /**
      * Fetches a product from in-memory storage based on product type.
      */
-    //@Override
+    @Override
     public Product getProductByType(String productType) {
         return products.get(productType);
     }
@@ -58,7 +58,7 @@ public class ProductDaoImpl implements ProductDao {
             saveProductsToFile(); // Save after adding
         } catch (DataPersistenceException ex) {
             restoreBackup(); // Restore backup if there's an error
-            throw ex; // Re-throw the exception
+            throw ex;
         }
     }
 
@@ -137,7 +137,10 @@ public class ProductDaoImpl implements ProductDao {
 
     private final String BACKUP_PATH = FILE_PATH + ".bak"; // Backup
 
-    // Backup the current data file
+    /**
+     * Backup the current data file
+     * Throws a DataPersistenceException if there's an issue creating a file backup.
+     */
     private void backupFile() {
         File sourceFile = new File(FILE_PATH);
         File backupFile = new File(BACKUP_PATH);
@@ -153,7 +156,10 @@ public class ProductDaoImpl implements ProductDao {
         }
     }
 
-    // Restore from the backup file
+    /**
+     * Restore from the backup file
+     * Throws a DataPersistenceException if there's an issue restoring a file ..
+     */
     private void restoreBackup() {
         File backupFile = new File(BACKUP_PATH);
         File sourceFile = new File(FILE_PATH);

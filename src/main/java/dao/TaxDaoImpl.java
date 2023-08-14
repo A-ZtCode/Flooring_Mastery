@@ -6,15 +6,30 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * TaxDaoImpl is the concrete implementation of the TaxDao interface.
+ * Tax records are stored both in-memory (using a HashMap) and in a file.
+ * Backup and restore functionalities are also provided to ensure data persistence.
+ */
 public class TaxDaoImpl implements TaxDao {
 
-    private final Map<String, Tax> taxes = new HashMap<>(); // in-memory storage
-    private final String FILE_PATH = "src/main/java/Taxes.txt"; // Name of the file that contains tax data
-    private final String BACKUP_PATH = FILE_PATH + ".bak"; // Backup
+    // In-memory storage for tax records, indexed by state abbreviation
+    private final Map<String, Tax> taxes = new HashMap<>();
 
+    // Path to the file containing tax data
+    private final String FILE_PATH = "src/main/java/Taxes.txt";
+    // Backup path for the tax data file
+    private final String BACKUP_PATH = FILE_PATH + ".bak";
+
+    /**
+     * Constructor initializes the DAO by loading tax records from the file into in-memory storage.
+     */
     public TaxDaoImpl() {
         // Load taxes into the in-memory map during instantiation
-        loadTaxesFromFile().forEach(tax -> taxes.put(tax.getStateAbbreviation(), tax));
+        loadTaxesFromFile().forEach(tax -> {
+            taxes.put(tax.getStateAbbreviation(), tax);
+            System.out.println("Loaded: " + tax.getStateAbbreviation());
+        });
     }
 
     // Fetch tax information by state abbreviation
@@ -66,8 +81,11 @@ public class TaxDaoImpl implements TaxDao {
         return true;  // Tax entry was removed successfully
     }
 
-    // Helper method to load taxes from the file to in-memory storage
-    private List<Tax> loadTaxesFromFile() {
+    /**
+     * Loads tax records from the data file into the in-memory storage.
+     *
+     * @return A list of tax records read from the file.
+     */    private List<Tax> loadTaxesFromFile() {
         taxes.clear(); // Clear the in-memory map before loading
         List<Tax> fileTaxes = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
@@ -94,7 +112,9 @@ public class TaxDaoImpl implements TaxDao {
     }
 
 
-    // Helper method to save taxes to the file
+    /**
+     * Writes the in-memory tax records to the data file.
+     */
     private void saveTaxesToFile() {
         backupFile();
         try (FileWriter writer = new FileWriter(FILE_PATH)) {
@@ -107,7 +127,9 @@ public class TaxDaoImpl implements TaxDao {
         }
     }
 
-    // Backup the current data file
+    /**
+     * Creates a backup of the current tax data file.
+     */
     private void backupFile() {
         File sourceFile = new File(FILE_PATH);
         File backupFile = new File(BACKUP_PATH);
@@ -123,7 +145,9 @@ public class TaxDaoImpl implements TaxDao {
         }
     }
 
-    // Restore from the backup file
+    /**
+     * Restores tax data from the backup file.
+     */
     private void restoreBackup() {
         File backupFile = new File(BACKUP_PATH);
         File sourceFile = new File(FILE_PATH);
