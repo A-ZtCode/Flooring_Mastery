@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-public class OrderServiceTest {
+public class OrderServiceImplTest {
 
     @Mock
     private OrderDao orderDao;

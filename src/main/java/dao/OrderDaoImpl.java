@@ -8,23 +8,50 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * This class provides an implementation for the data access operations for Orders.
+ * It uses an in-memory map and file storage to manage orders.
+ */
 public class OrderDaoImpl extends OrderDao {
 
     private final Map<Integer, Order> orders = new HashMap<>();
-    private static final String BASE_PATH = "path_to_your_project_directory/OrdersFiles/";
+    private static final String BASE_PATH = "src/main/java/OrdersFiles/";
 
+
+    /**
+     * Returns the file path for a given date.
+     *
+     * @param date The date to get the file path for.
+     * @return The file path.
+     */
     private String getFilePathForDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("MMddyyyy");
         return BASE_PATH + "Orders_" + sdf.format(date) + ".txt";
     }
 
+    /**
+     * Returns the backup file path for a given date.
+     *
+     * @param date The date to get the backup file path for.
+     * @return The backup file path.
+     */
     private String getBackupFilePathForDate(Date date) {
         return getFilePathForDate(date) + ".bak";
     }
 
-
+    /**
+     * Constructs an instance and initializes it by loading all orders from the files.
+     */
     public OrderDaoImpl() {
         File folder = new File(BASE_PATH);
+        if (!folder.exists()){
+            boolean dirCreated = folder.mkdirs();
+            if (dirCreated) {
+                System.out.println("Directory created successfully.");
+            } else {
+                System.err.println("Failed to create directory.");
+            }
+        }
         File[] listOfFiles = folder.listFiles();
 
         if (listOfFiles != null) {
@@ -36,7 +63,12 @@ public class OrderDaoImpl extends OrderDao {
         }
     }
 
-
+    /**
+     * Adds a new order to the in-memory storage and saves to the file.
+     *
+     * @param order The order to be added.
+     * @return The added order with its assigned order number.
+     */
     @Override
     public Order addOrder(Order order) {
         int nextOrderId = getNextOrderId();
@@ -45,19 +77,30 @@ public class OrderDaoImpl extends OrderDao {
         saveOrdersToFile(order.getOrderDate());   // Save the updated orders back to the file
         return order;
     }
+
+    /**
+     * Edits an existing order in the in-memory storage and saves the updated order to the file.
+     *
+     * @param order The updated order.
+     * @throws OrderNotFoundException If the order to be edited does not exist.
+     */
     @Override
     public void editOrder(Order order) throws OrderNotFoundException {
         if (orders.containsKey(order.getOrderNumber())) {
             orders.put(order.getOrderNumber(), order);  // Update order in in-memory storage
             saveOrdersToFile(order.getOrderDate()); // Save the updated orders back to the file
         } else {
-            // Log an error
-            System.err.println("Error: Order with ID " + order.getOrderNumber() + " not found!");
-            // Throw a custom exception
+              // Throw a custom exception
             throw new OrderNotFoundException("Order with ID " + order.getOrderNumber() + " does not exist!");
 
         }
     }
+
+    /**
+     * Removes an order from the in-memory storage and updates the file.
+     *
+     * @param orderId The ID of the order to be removed.
+     */
     @Override
     public void removeOrder(int orderId) {
         Order order = orders.remove(orderId);
@@ -66,7 +109,12 @@ public class OrderDaoImpl extends OrderDao {
         }
     }
 
-
+    /**
+     * Retrieves orders by a specific date.
+     *
+     * @param date The date to retrieve orders for.
+     * @return A list of orders for the specified date.
+     */
     public List<Order> getOrdersByDate(Date date) {
         List<Order> ordersByDate = new ArrayList<>();
         for (Order order : orders.values()) {
@@ -77,11 +125,23 @@ public class OrderDaoImpl extends OrderDao {
         return ordersByDate;
     }
 
+    /**
+     * Retrieves an order by its order ID.
+     *
+     * @param orderId The ID of the order to retrieve.
+     * @return The order if found, otherwise null.
+     */
     @Override
     public Order getOrderById(int orderId) {
         return orders.get(orderId);
     }
 
+    /**
+     * Searches orders by a customer's name.
+     *
+     * @param customerName The customer's name to search by.
+     * @return A list of orders that match the customer's name.
+     */
     @Override
     public List<Order> searchOrdersByName(String customerName) {
         List<Order> matchingOrders = new ArrayList<>();
@@ -93,11 +153,21 @@ public class OrderDaoImpl extends OrderDao {
         return matchingOrders;
     }
 
+    /**
+     * Retrieves all orders from the in-memory storage.
+     *
+     * @return A list of all orders.
+     */
     @Override
     public List<Order> getAllOrders() {
         return new ArrayList<>(orders.values());
     }
 
+    /**
+     * Searches orders by product type.
+     * @param  productType The product type to search by.
+     * @return A list of orders that match the product type.
+     */
     @Override
     public List<Order> searchOrdersByProductType(String productType) {
         List<Order> matchingOrders = new ArrayList<>();
@@ -109,6 +179,12 @@ public class OrderDaoImpl extends OrderDao {
         return matchingOrders;
     }
 
+    /**
+     * Searches orders by state.
+     *
+     * @param state The state to search by.
+     * @return A list of orders that match the state.
+     */
     @Override
     public List<Order> searchOrdersByState(String state) {
         List<Order> matchingOrders = new ArrayList<>();
@@ -119,7 +195,11 @@ public class OrderDaoImpl extends OrderDao {
         }
         return matchingOrders;
     }
-
+    /**
+     * Generates the next order ID.
+     *
+     * @return The next order ID.
+     */
     private int getNextOrderId() {
         // Find the maximum order ID and increment by 1 for the next order
         return orders.keySet().stream()
@@ -128,11 +208,17 @@ public class OrderDaoImpl extends OrderDao {
                 .orElse(0) + 1;
     }
 
-    // Helper method to load orders from the file to in-memory storage
+    /**
+     * Loads orders from a file for a specific date.
+     *
+     * @param date The date to load orders for.
+     * @return A list of orders loaded from the file.
+     */
     private List<Order> loadOrdersFromFile(Date date) {
         List<Order> fileOrders = new ArrayList<>();
         String filePath = getFilePathForDate(date);
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            reader.readLine();  // Skip the header line
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
@@ -160,7 +246,12 @@ public class OrderDaoImpl extends OrderDao {
         return fileOrders;
     }
 
-    // Helper method to parse a date from string (format: MM-DD-YYYY)
+    /**
+     * Parses a date from a string.
+     *
+     * @param dateString The string representation of the date.
+     * @return The parsed date.
+     */
     private Date parseDate(String dateString) {
         // Implement date parsing logic
         // Placeholder implementation, you need to replace with actual parsing logic
@@ -173,9 +264,14 @@ public class OrderDaoImpl extends OrderDao {
         }
     }
 
-        // Helper method to save orders to the file
+    /**
+     * Saves all orders to a file for a specific date.
+     *
+     * @param date The date for which to save orders.
+     */
         private void saveOrdersToFile(Date date) {
             String filePath = getFilePathForDate(date);
+            System.out.println("Saving orders to: " + filePath);
             backupFile(date);
 
             SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
@@ -205,23 +301,47 @@ public class OrderDaoImpl extends OrderDao {
             }
         }
 
-    // Backup the current data file
+    /**
+     * Creates a backup of the data file for a specific date.
+     *
+     * @param date The date for which to create a backup.
+     */
     private void backupFile(Date date) {
         File sourceFile = new File(getFilePathForDate(date));
-        File backupFile = new File(getBackupFilePathForDate(date));
-        try (FileInputStream fis = new FileInputStream(sourceFile);
-             FileOutputStream fos = new FileOutputStream(backupFile)) {
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = fis.read(buffer)) != -1) {
-                    fos.write(buffer, 0, bytesRead);
+
+        // Check if the source file exists. If not, create an empty one.
+        if (!sourceFile.exists()) {
+            try {
+                boolean created = sourceFile.createNewFile();
+                if (!created) {
+                    System.err.println("Failed to create new file: " + sourceFile.getAbsolutePath());
+                    return; // return if file creation fails
                 }
             } catch (IOException ex) {
-                System.err.println("Error creating backup: " + ex.getMessage());
+                System.err.println("Error creating new file: " + sourceFile.getAbsolutePath());
+                ex.printStackTrace();
+                return;
             }
         }
 
-        // Restore from the backup file
+        File backupFile = new File(getBackupFilePathForDate(date));
+        try (FileInputStream fis = new FileInputStream(sourceFile);
+             FileOutputStream fos = new FileOutputStream(backupFile)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                fos.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException ex) {
+            System.err.println("Error creating backup: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Restores data from a backup for a specific date.
+     *
+     * @param date The date for which to restore data.
+     */
         private void restoreBackup(Date date) {
             File backupFile = new File(getBackupFilePathForDate(date));
             File sourceFile = new File(getFilePathForDate(date));
@@ -237,7 +357,12 @@ public class OrderDaoImpl extends OrderDao {
             }
         }
 
-        // Helper method to format a date into string (format: MM-DD-YYYY)
+    /**
+     * Parses a date from a file name.
+     *
+     * @param fileName The name of the file.
+     * @return The parsed date.
+     */
         private Date parseDateFromFileName(String fileName) {
             try {
                 String datePart = fileName.replace("Orders_", "").replace(".txt", "");
@@ -248,4 +373,47 @@ public class OrderDaoImpl extends OrderDao {
                 return null;
             }
         }
+
+    /**
+     * Specify Backup Folder Path
+     */
+    private static final String EXPORT_PATH = "src/main/java/Backup/DataExport.txt";
+
+
+    /**
+     * Exports all order data to a file.
+     */
+    public void exportAllData() {
+        File exportFile = new File(EXPORT_PATH);
+        File parentDir = exportFile.getParentFile();
+
+        if (!parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+
+        try (FileWriter writer = new FileWriter(exportFile, false)) {
+            writer.write("OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total,OrderDate\n");
+
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+            for (Order order : orders.values()) {
+                writer.write(String.join(",",
+                        order.getOrderNumber().toString(),
+                        order.getCustomerName(),
+                        order.getState(),
+                        order.getTaxRate().toString(),
+                        order.getProductType(),
+                        order.getArea().toString(),
+                        order.getCostPerSquareFoot().toString(),
+                        order.getLaborCostPerSquareFoot().toString(),
+                        order.getMaterialCost().toString(),
+                        order.getLaborCost().toString(),
+                        order.getTax().toString(),
+                        order.getTotal().toString(),
+                        sdf.format(order.getOrderDate())
+                ) + "\n");
+            }
+        } catch (IOException ex) {
+            System.err.println("Error exporting data: " + ex.getMessage());
+        }
     }
+}

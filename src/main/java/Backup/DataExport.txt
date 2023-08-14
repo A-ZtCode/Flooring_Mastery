@@ -1,0 +1,8 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total,OrderDate
+1,Mercy Azeta,AK,0.00,Quartz,150.00,6.15,6.75,922.50,1012.50,0.00,1935.00,12-05-2023
+2,Mimi Lo,AL,4.00,Brick,140.00,3.95,4.50,553.00,630.00,47.32,1230.32,05-26-2024
+3,Mimi Lo,IN,7.00,Tile,160.00,3.50,4.15,560.00,664.00,85.68,1309.68,10-31-2023
+4,Maria Ozoa,AR,6.50,Slate,190.00,5.80,6.40,1102.00,1216.00,150.67,2468.67,12-12-2023
+5,Maria Maria,CO,2.90,Travertine,200.00,5.90,6.50,1180.00,1300.00,71.92,2551.92,12-12-2023
+6,Maria Boa,AZ,5.60,Slate,200.00,5.80,6.40,1160.00,1280.00,136.64,2576.64,12-12-2023
+7,Maria Gonza,AZ,5.60,Slate,200.00,5.80,6.40,1160.00,1280.00,136.64,2576.64,12-12-2023

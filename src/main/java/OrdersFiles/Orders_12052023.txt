@@ -1,0 +1,2 @@
+OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total,OrderDate
+1,Mercy Azeta,AK,0.00,Quartz,150,6.15,6.75,922.50,1012.50,0.0000,1935.0000,12-05-2023

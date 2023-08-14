@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class TaxDaoTest {
+public class TaxDaoImplTest {
 
     private TaxDao taxDao;
 
