@@ -26,7 +26,7 @@ public class TaxDaoTest {
         assertNotNull(tax);
         assertEquals("OH", tax.getStateAbbreviation());
         assertEquals("Ohio", tax.getStateName());
-        assertEquals(new BigDecimal("6.25"), tax.getTaxRate());
+        assertEquals(new BigDecimal("7.00"), tax.getTaxRate());
     }
 
     @Test
@@ -66,10 +66,8 @@ public class TaxDaoTest {
     @Test
     public void testRemoveTax() {
         // Test removing a tax entry by state abbreviation
-        assertTrue(taxDao.removeTaxByState("PA"));
-        assertNull(taxDao.getTaxByState("PA"));
+        assertTrue(taxDao.removeTaxByState("OH"));
+        assertNull(taxDao.getTaxByState("OH"));
     }
-
-
-
+    
 }

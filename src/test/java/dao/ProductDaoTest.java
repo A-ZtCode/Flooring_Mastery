@@ -70,6 +70,4 @@ public class ProductDaoTest {
         assertNull(productDao.getProductByType("Laminate"));
     }
 
-
-
 }

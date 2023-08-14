@@ -2,6 +2,8 @@ package service;
 
 import dao.TaxDao;
 import modelDTO.Tax;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 public class TaxServiceImpl implements TaxService {
@@ -25,12 +27,17 @@ public class TaxServiceImpl implements TaxService {
     }
 
     @Override
-    public void addTax(Tax tax) {
-        // Validating the tax data before adding
-        if (validateTaxData(tax)) {
-            taxDao.addTax(tax);
-        } else {
-            throw new ServiceException("Invalid tax data provided.");
+    public boolean addTax(Tax tax) {
+        try {
+            // Validating the tax data before adding
+            if (validateTaxData(tax)) {
+                taxDao.addTax(tax);
+                return true; // Consider returning true after successful addition
+            } else {
+                throw new ServiceException("Invalid tax data provided.");
+            }
+        } catch (RuntimeException e) {
+            throw new ServiceException("Error while adding tax.", e);
         }
     }
 
@@ -52,7 +59,17 @@ public class TaxServiceImpl implements TaxService {
 
     @Override
     public boolean validateTaxData(Tax tax) {
-        // Basic validation: Ensure the tax and its state abbreviation are not null
-        return tax != null && tax.getStateAbbreviation() != null && !tax.getStateAbbreviation().isEmpty();
+        if (tax == null) return false;
+
+        String abbreviation = tax.getStateAbbreviation();
+        BigDecimal rate = tax.getTaxRate(); // Assuming you have a getTaxRate method in the Tax class
+
+        // Check if the abbreviation is not null and not too long
+        if (abbreviation == null || abbreviation.isEmpty() || abbreviation.length() > 2) return false;
+
+        // Check for valid tax rate (not negative, not over 100%)
+        if (rate == null || rate.compareTo(BigDecimal.ZERO) < 0 || rate.compareTo(new BigDecimal("100")) > 0) return false;
+
+        return true;
     }
 }
