@@ -9,7 +9,7 @@ import java.util.*;
 public class TaxDaoImpl implements TaxDao {
 
     private final Map<String, Tax> taxes = new HashMap<>(); // in-memory storage
-    private final String FILE_PATH = "Taxes.txt"; // Name of the file that contains tax data
+    private final String FILE_PATH = "src/main/java/Taxes.txt"; // Name of the file that contains tax data
     private final String BACKUP_PATH = FILE_PATH + ".bak"; // Backup
 
     public TaxDaoImpl() {
@@ -68,14 +68,20 @@ public class TaxDaoImpl implements TaxDao {
     private List<Tax> loadTaxesFromFile() {
         List<Tax> fileTaxes = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+            reader.readLine();  // Skip the header line
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length >= 3) {
-                    String stateAbbreviation = parts[0].trim();
-                    String stateName = parts[1].trim();
-                    BigDecimal taxRate = new BigDecimal(parts[2].trim());
-                    fileTaxes.add(new Tax(stateAbbreviation, stateName, taxRate)); // Add tax to in-memory storage
+                    try {
+                        String stateAbbreviation = parts[0].trim();
+                        String stateName = parts[1].trim();
+                        BigDecimal taxRate = new BigDecimal(parts[2].trim());
+                        fileTaxes.add(new Tax(stateAbbreviation, stateName, taxRate)); // Add tax to in-memory storage
+                    } catch (NumberFormatException e) {
+                        System.err.println("Error converting value to number from line: " + line);
+                        e.printStackTrace();
+                    }
                 }
             }
         } catch (IOException ex) {
