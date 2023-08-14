@@ -8,7 +8,7 @@ import java.util.List;
 
 public class OrderServiceStubImpl implements OrderService{
 
-    Order  onlyorder =
+
     @Override
     public void addOrder(Order order) {
 
