@@ -68,11 +68,11 @@ public class OrderServiceImpl implements OrderService {
         if (order == null) {
             throw new ServiceException("Order object is null!");
         }
-        String stateAbbreviation = getStateAbbreviation(order.getState());
-        if (stateAbbreviation == null) {
-            throw new ServiceException("Invalid state name provided!");
-        }
-        order.setState(stateAbbreviation); // Set the order's state to the abbreviation
+//        String stateAbbreviation = getStateAbbreviation(order.getState());
+//        if (stateAbbreviation == null) {
+//            throw new ServiceException("Invalid state name provided!");
+//        }
+//        order.setState(stateAbbreviation); // Set the order's state to the abbreviation
         validateProductType(order.getProductType());
         validateState(order.getState());
         calculateOrderCosts(order);
@@ -116,7 +116,9 @@ public class OrderServiceImpl implements OrderService {
     }
     @Override
     public List<Order> getAllOrders() {
-        return orderDao.getAllOrders();
+        List<Order> allOrders = orderDao.getAllOrders();
+        System.out.println("Number of orders to export: " + allOrders.size());
+        return allOrders;
     }
 
     @Override

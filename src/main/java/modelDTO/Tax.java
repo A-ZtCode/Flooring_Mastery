@@ -40,4 +40,9 @@ public class Tax {
     public void setTaxRate(BigDecimal taxRate) {
         this.taxRate = taxRate;
     }
+
+    @Override
+    public String toString() {
+        return "State: " + this.getStateAbbreviation() + ", Tax Rate: " + this.getTaxRate() + "%";
+    }
 }

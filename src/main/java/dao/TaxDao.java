@@ -3,7 +3,9 @@ package dao;
 import modelDTO.Tax;
 import java.util.List;
 
-// Tax DAO Interface
+/**
+ * TaxDao represents the data access object interface for Tax entities.
+ */
 public interface TaxDao {
 
     /**
@@ -16,7 +18,6 @@ public interface TaxDao {
 
     /**
      * Retrieves all tax records.
-     *
      * @return A list of all tax records.
      */
     List<Tax> getAllTaxes();
