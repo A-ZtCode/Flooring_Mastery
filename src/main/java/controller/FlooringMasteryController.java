@@ -1,6 +1,7 @@
 package controller;
 
 import modelDTO.Order;
+import modelDTO.Product;
 import modelDTO.Tax;
 import service.OrderService;
 import service.ProductService;
@@ -23,15 +24,15 @@ import java.time.ZonedDateTime;
 public class FlooringMasteryController {
 
     private final MenuView menuView;
-    private OrderService orderService = null;
-    private ProductService productService = null;
-    private TaxService taxService = null;
+    private final OrderService orderService;
+    private final ProductService productService;
+    private final TaxService taxService;
 
     private Date convertLocalDateToDate(LocalDate localDate) {
         ZonedDateTime zdt = localDate.atStartOfDay(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
-    private static final String EXPORT_FILE_PATH = "controller/Backup/DataExport.txt";
+    private static final String EXPORT_FILE_PATH = "Backup/DataExport.txt";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 
     public FlooringMasteryController(MenuView menuView, OrderService orderService, ProductService productService, TaxService taxService) {
@@ -42,40 +43,109 @@ public class FlooringMasteryController {
     }
 
     private LocalDate promptForDate() {
-        String dateStr = menuView.getUserInputString("Please enter the date (MM-dd-yyyy): ");
+        String dateStr = menuView.getUserInputString("Please enter the order date (MM-dd-yyyy): ");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
         return LocalDate.parse(dateStr, formatter);
     }
+
 
     private int promptForOrderId() {
         return menuView.getUserInputInt("Please enter the order ID: ");
     }
 
     private Order gatherOrderData() {
-        String customerName = menuView.getUserInputString("Enter customer name: ");
-        String state = menuView.getUserInputString("Enter state: ");
-        BigDecimal taxRate = menuView.getUserInputDecimal("Enter tax rate: ");
-        String productType = menuView.getUserInputString("Enter product type: ");
-        BigDecimal area = menuView.getUserInputDecimal("Enter area: ");
-        BigDecimal costPerSquareFoot = menuView.getUserInputDecimal("Enter cost per square foot: ");
-        BigDecimal laborCostPerSquareFoot = menuView.getUserInputDecimal("Enter labor cost per square foot: ");
-        BigDecimal materialCost = area.multiply(costPerSquareFoot); // Calculated using Order's method
-        BigDecimal laborCost = area.multiply(laborCostPerSquareFoot); // Calculated using Order's method
-        // Fetching the Tax object for the provided state to calculate tax and total
-        Tax taxObject = taxService.getTaxByState(state);
-        if (taxObject == null) {
-            menuView.displayErrorMessage("Invalid state provided. Tax details not found.");
-            return null; // Return null or handle appropriately
-        }
-        BigDecimal tax = materialCost.add(laborCost).multiply(taxObject.getTaxRate().divide(new BigDecimal("100")));
-        BigDecimal total = materialCost.add(laborCost).add(tax);
-        Date orderDate = new Date(); // Current date.
+        // Start with collecting the Order Date
+        LocalDate orderDate;
+        do {
+            orderDate = promptForDate();
+            if (orderDate.isBefore(LocalDate.now())) {
+                menuView.displayErrorMessage("Order date must be in the future.");
+            }
+        } while (orderDate.isBefore(LocalDate.now()));
+        // Validation for Customer Name
+        String customerName;
+        do {
+            customerName = menuView.getUserInputString("Enter customer name: ");
+            if (!customerName.matches("[a-zA-Z0-9., ]+")) {
+                menuView.displayErrorMessage("Invalid customer name. Only alphanumeric characters, periods, and commas are allowed.");
+            }
+        } while (!customerName.matches("[a-zA-Z0-9., ]+"));
 
-        // Assuming an auto-incremented ID or some other method to generate a unique ID for the order
-        // For now, setting it to null. You might want to generate it appropriately
+        // Get valid state and associated tax details
+        Tax selectedTax = getValidTax();
+        if (selectedTax == null) {
+            return null;
+        }
+        String state = selectedTax.getStateAbbreviation();
+        BigDecimal taxRate = selectedTax.getTaxRate();
+
+        // Get valid product type and associated product details
+        Product selectedProduct = getValidProduct();
+        if (selectedProduct == null) {
+            return null;
+        }
+        String productType = selectedProduct.getProductType();
+
+        // Validation for Area
+        BigDecimal area;
+        do {
+            area = menuView.getUserInputDecimal("Enter area: ");
+            if (area.compareTo(new BigDecimal("100")) < 0) {
+                menuView.displayErrorMessage("Minimum order size is 100 sq ft.");
+            }
+        } while (area.compareTo(new BigDecimal("100")) < 0);
+
+        BigDecimal costPerSquareFoot = selectedProduct.getCostPerSquareFoot();
+        BigDecimal laborCostPerSquareFoot = selectedProduct.getLaborCostPerSquareFoot();
+        BigDecimal materialCost = area.multiply(costPerSquareFoot);
+        BigDecimal laborCost = area.multiply(laborCostPerSquareFoot);
+        BigDecimal tax = materialCost.add(laborCost).multiply(taxRate.divide(new BigDecimal("100")));
+        BigDecimal total = materialCost.add(laborCost).add(tax);
         Integer orderId = null;
 
-        return new Order(orderId, customerName, state, taxRate, productType, area, costPerSquareFoot, laborCostPerSquareFoot, materialCost, laborCost, tax, total, orderDate);
+        return new Order(orderId, customerName, state, taxRate, productType, area, costPerSquareFoot, laborCostPerSquareFoot, materialCost, laborCost, tax, total, convertLocalDateToDate(orderDate));
+    }
+
+    private Tax getValidTax() {
+        List<Tax> availableTaxes = taxService.getAllTaxes();
+        if (availableTaxes.isEmpty()) {
+            menuView.displayErrorMessage("No states available for order placement.");
+            return null;
+        }
+        menuView.displayAvailableStates(availableTaxes);
+        while (true) {
+            String stateInput = menuView.getUserInputString("Enter state abbreviation from the list: ").toUpperCase();
+            Tax selectedTax = availableTaxes.stream()
+                    .filter(tax -> tax.getStateAbbreviation().equalsIgnoreCase(stateInput))
+                    .findFirst()
+                    .orElse(null);
+            if (selectedTax != null) {
+                return selectedTax;
+            } else {
+                menuView.displayErrorMessage("Invalid state. Please select from the list.");
+            }
+        }
+    }
+
+    private Product getValidProduct() {
+        List<Product> availableProducts = productService.getAllProducts();
+        if (availableProducts.isEmpty()) {
+            menuView.displayErrorMessage("No products available for order placement.");
+            return null;
+        }
+        menuView.displayAvailableProducts(availableProducts);
+        while (true) {
+            String productInput = menuView.getUserInputString("Enter product type from the list: ");
+            Product selectedProduct = availableProducts.stream()
+                    .filter(product -> product.getProductType().equalsIgnoreCase(productInput))
+                    .findFirst()
+                    .orElse(null);
+            if (selectedProduct != null) {
+                return selectedProduct;
+            } else {
+                menuView.displayErrorMessage("Invalid product type. Please select from the list.");
+            }
+        }
     }
 
 
@@ -92,12 +162,12 @@ public class FlooringMasteryController {
                         LocalDate localDateToDisplay = promptForDate();
                         Date dateToDisplay = convertLocalDateToDate(localDateToDisplay);
                         List<Order> orders = orderService.getOrdersByDate(dateToDisplay);
-                        // Display orders if available, otherwise show message
-                        if (!orders.isEmpty()) {
-                            menuView.displayOrders(orders);
+
+                        if(orders.isEmpty()) {
+                            menuView.displayErrorMessage("No orders exist for the provided date.");
                         } else {
-                            menuView.displayMessage("No orders found for the specified date.");
-                        }
+                            menuView.displayOrders(orders);
+      }
                         break;
                     case 2: // Add an Order
                         Order orderToAdd = gatherOrderData();
@@ -147,7 +217,7 @@ public class FlooringMasteryController {
     private void exportAllData() {
         try {
             // Ensure the Backup directory exists
-            Files.createDirectories(Paths.get("controller/Backup"));
+            Files.createDirectories(Paths.get("Backup"));
 
             // Get all the orders
             List<Order> allOrders = orderService.getAllOrders();
@@ -184,5 +254,5 @@ public class FlooringMasteryController {
                 order.getTotal(),
                 DATE_FORMATTER.format(order.getOrderDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
         );
-    }
+    } //
 }

@@ -38,7 +38,7 @@ public class OrderDaoTest {
 
         // Verify order details
         Order retrievedOrder = orders.get(0);
-        assertEquals(order.getOrderId(), retrievedOrder.getOrderId());
+        assertEquals(order.getOrderNumber(), retrievedOrder.getOrderNumber());
         assertEquals(order.getCustomerName(), retrievedOrder.getCustomerName());
         assertEquals(order.getState(), retrievedOrder.getState());
         assertEquals(order.getTaxRate(), retrievedOrder.getTaxRate());
@@ -68,7 +68,7 @@ public class OrderDaoTest {
         orderDao.editOrder(order);
 
         // Get the edited order by ID
-        Order retrievedOrder = orderDao.getOrderById((int) order.getOrderId());
+        Order retrievedOrder = orderDao.getOrderById((int) order.getOrderNumber());
 
         assertNotNull(retrievedOrder);
         assertEquals("Updated Customer", retrievedOrder.getCustomerName());
@@ -83,7 +83,5 @@ public class OrderDaoTest {
         assertEquals(order.getTax(), retrievedOrder.getTax());
         assertEquals(order.getTotal(), retrievedOrder.getTotal());
     }
-
-
 
 }

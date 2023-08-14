@@ -1,4 +1,4 @@
-package org.example;
+package org.mainapp;
 
 import controller.FlooringMasteryController;
 import dao.OrderDaoImpl;

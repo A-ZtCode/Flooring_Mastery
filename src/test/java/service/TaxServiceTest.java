@@ -81,10 +81,10 @@ public class TaxServiceTest {
         // Create a valid tax for testing
         Tax validTax = new Tax("TX", "Texas", new BigDecimal("6.75"));
         // Mock the behaviour of the DAO method to do nothing
-        doNothing().when(taxDao).addTax(validTax);
+        doReturn(true).when(taxDao).addTax(validTax);
 
-        taxService.addTax(validTax);
-
+        boolean result = taxService.addTax(validTax);
+        assertTrue(result);
         // Verify that the DAO method was called once with the expected parameter
         verify(taxDao, times(1)).addTax(validTax);
     }

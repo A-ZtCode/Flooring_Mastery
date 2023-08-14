@@ -20,10 +20,12 @@ public class TaxDaoImpl implements TaxDao {
     // Fetch tax information by state abbreviation
     @Override
     public Tax getTaxByState(String state) {
-        loadTaxesFromFile(); // Load taxes from the file to the in-memory storage
-        return taxes.get(state); // Fetch the tax from the in-memory storage
+        Tax tax = taxes.get(state);
+        if (tax == null) {
+            System.out.println("State not found in in-memory map: " + state);
+        }
+        return tax;
     }
-
 
     // Fetch all tax information
     @Override
@@ -66,6 +68,7 @@ public class TaxDaoImpl implements TaxDao {
 
     // Helper method to load taxes from the file to in-memory storage
     private List<Tax> loadTaxesFromFile() {
+        taxes.clear(); // Clear the in-memory map before loading
         List<Tax> fileTaxes = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             reader.readLine();  // Skip the header line
@@ -89,6 +92,7 @@ public class TaxDaoImpl implements TaxDao {
         }
         return fileTaxes;
     }
+
 
     // Helper method to save taxes to the file
     private void saveTaxesToFile() {

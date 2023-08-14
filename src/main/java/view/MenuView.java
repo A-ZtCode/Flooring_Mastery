@@ -34,18 +34,18 @@ public class MenuView {
     }
 
     // Display a list of available products
-    public void displayProductOptions(List<Product> products) {
+    public void displayAvailableProducts(List<Product> availableProducts) {
         System.out.println("Available Products:");
-        for (Product product : products) {
-            System.out.println(productToString(product));
+        for (Product product : availableProducts) {
+            System.out.println(product.getProductType() + " - Cost per sq ft: " + product.getCostPerSquareFoot() + " - Labor cost per sq ft: " + product.getLaborCostPerSquareFoot());
         }
     }
 
     // Display a list of available taxes
-    public void displayTaxOptions(List<Tax> taxes) {
-        System.out.println("Available Taxes:");
-        for (Tax tax : taxes) {
-            System.out.println(taxToString(tax));
+    public void displayAvailableStates(List<Tax> availableTaxes) {
+        System.out.println("Available States:");
+        for (Tax tax : availableTaxes) {
+            System.out.println(tax.getStateAbbreviation() + " - " + tax.getStateName());
         }
     }
 
