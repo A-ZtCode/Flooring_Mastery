@@ -84,6 +84,6 @@ public class OrderDaoTest {
         assertEquals(order.getTotal(), retrievedOrder.getTotal());
     }
 
-    
+
 
 }
