@@ -10,15 +10,26 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Test class for OrderDaoImpl. It includes unit tests to verify the basic CRUD operations
+ * on the OrderDao implementation.
+ */
 public class OrderDaoImplTest {
 
     private OrderDao orderDao;
 
+    /**
+     * Set up the test environment. This method is run before each test.
+     */
     @Before
     public void setUp() {
         orderDao = new OrderDaoImpl(); // Initialize OrderDao
     }
 
+    /**
+     * Test case to verify adding an order and then retrieving orders by date.
+     * It checks if the added order is correctly stored and can be retrieved using its date.
+     */
     @Test
     public void testAddOrderAndGetOrdersByDate() {
         // Create a sample order
@@ -52,6 +63,10 @@ public class OrderDaoImplTest {
         assertEquals(order.getTotal(), retrievedOrder.getTotal());
     }
 
+    /**
+     * Test case to verify editing an existing order and then retrieving it by ID.
+     * It checks if the modifications on the order are correctly stored and can be retrieved using its ID.
+     */
     @Test
     public void testEditOrderAndGetOrderById() throws OrderNotFoundException {
         // Create a sample order
@@ -70,6 +85,7 @@ public class OrderDaoImplTest {
         // Get the edited order by ID
         Order retrievedOrder = orderDao.getOrderById((int) order.getOrderNumber());
 
+        // Assertions
         assertNotNull(retrievedOrder);
         assertEquals("Updated Customer", retrievedOrder.getCustomerName());
         assertEquals("NY", retrievedOrder.getState());
