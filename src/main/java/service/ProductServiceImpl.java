@@ -13,7 +13,7 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     // Instance of ProductDao to interact with the data store.
-    private final ProductDao productDao;
+    private ProductDao productDao;
 
     /**
      * Constructor for ProductServiceImpl.
@@ -29,32 +29,43 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public List<Product> getAllProducts() {
-        return productDao.getAllProducts();
+        try {
+            return productDao.getAllProducts();
+        } catch (RuntimeException e) {
+            throw new ServiceException("Error getting products.", e);
+        }
     }
 
     /**
      * Fetches a specific product based on its type.
-     * @param productType The type of the product to be retrieved.
+     * @param type The type of the product to be retrieved.
      * @return The product corresponding to the provided type, or null if not found.
      */
     @Override
-    public Product getProductByType(String productType) {
-        return productDao.getProductByType(productType);
-    }
-
-    /**
-     * Adds a new product to the data store after validating its data.
-     * @param product The product object to be added.
-     * @throws ServiceException if the provided product data is invalid.
-     */
-    @Override
-    public void addProduct(Product product) {
-        if (validateProductData(product)) {
-            productDao.addProduct(product);
-        } else {
-            throw new ServiceException("Invalid product data provided.");
+    public Product getProductByType(String type) {
+        try {
+            return productDao.getProductByType(type);
+        } catch (RuntimeException e) {
+            throw new ServiceException("Error getting product by type.", e);
         }
     }
+        /**
+         * Adds a new product to the data store after validating its data.
+         * @param product The product object to be added.
+         * @throws ServiceException if the provided product data is invalid.
+         */
+        @Override
+        public void addProduct(Product product) {
+            if (validateProductData(product)) {
+                try {
+                    productDao.addProduct(product);
+                } catch (RuntimeException e) {
+                    throw new ServiceException("Error adding product.", e);
+                }
+            } else {
+                throw new ServiceException("Invalid product data provided.");
+            }
+        }
 
     /**
      * Updates an existing product in the data store after validating its data.
@@ -64,7 +75,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void editProduct(Product product) {
         if (validateProductData(product)) {
-            productDao.updateProduct(product);
+            try {
+                productDao.updateProduct(product);
+            } catch (RuntimeException e) {
+                throw new ServiceException("Error editing product.", e);
+            }
         } else {
             throw new ServiceException("Invalid product data provided.");
         }
@@ -76,7 +91,11 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public void removeProduct(String productType) {
-        productDao.removeProductByType(productType);
+        try {
+            productDao.removeProductByType(productType);
+        } catch (RuntimeException e) {
+            throw new ServiceException("Error removing product.", e);
+        }
     }
 
     /**

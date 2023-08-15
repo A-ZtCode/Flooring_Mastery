@@ -78,8 +78,8 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void addOrder(Order order) {
-        if (order == null) {
-            throw new ServiceException("Order object is null!");
+        if (order.getArea().compareTo(BigDecimal.ZERO) < 0) {
+            throw new ServiceException("Area cannot be zero or negative!");
         }
 //        String stateAbbreviation = getStateAbbreviation(order.getState());
 //        if (stateAbbreviation == null) {
@@ -100,6 +100,10 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void editOrder(Order order) {
+        if (order == null) {
+            throw new ServiceException("Order cannot be null!");
+        }
+
         try {
             Order existingOrder = orderDao.getOrderById(order.getOrderNumber());
             if (existingOrder == null) {
@@ -136,7 +140,11 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public List<Order> getOrdersByDate(Date date) {
-        return orderDao.getOrdersByDate(date);
+        try {
+            return orderDao.getOrdersByDate(date);
+        } catch (RuntimeException e) {
+            throw new ServiceException("Error fetching orders.", e);
+        }
     }
 
     /**
@@ -172,6 +180,9 @@ public class OrderServiceImpl implements OrderService {
     public boolean validateOrderData(Order order) {
         if (order == null) {
             throw new ServiceException("Order cannot be null!");
+        }
+        if (order.getArea().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ServiceException("Area cannot be zero or negative!");
         }
         if (order.getCustomerName() == null || order.getCustomerName().isEmpty()) {
             throw new ServiceException("Customer name cannot be empty!");
@@ -229,7 +240,7 @@ public class OrderServiceImpl implements OrderService {
         // Get the tax details based on the order's state
         Tax tax = taxDao.getTaxByState(order.getState());
         if (tax == null) {
-            throw new ServiceException("Invalid state for tax calculation!");
+            throw new ServiceException("Tax information not available for " + order.getState() + "!");
         }
         // Calculate and return the tax amount for the order
         return order.calculateTax(tax);
@@ -246,7 +257,7 @@ public class OrderServiceImpl implements OrderService {
         // Get the product details based on the order's product type
         Product product = productDao.getProductByType(order.getProductType());
         if (product == null) {
-            throw new ServiceException("Invalid product type for cost calculation!");
+            throw new ServiceException("Product information not available for " + order.getProductType() + "!");
         }
         // Calculate and return the total cost based on product type
         return order.getArea().multiply(product.getCostPerSquareFoot());
