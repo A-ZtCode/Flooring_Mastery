@@ -217,11 +217,10 @@ public class FlooringMasteryController {
                         int orderIdToRemove = promptForOrderId();
                         orderService.removeOrder(orderIdToRemove);
                         menuView.displayMessage("Order removed successfully.");
-                        //System.out.println("Order removed successfully.");
                         break;
                     case 5: // Export All Data
                         exportAllData();
-                        //System.out.println("Data exported successfully.");
+
                         menuView.displayMessage("Data exported successfully.");
                         break;
                     case 6: // Quit

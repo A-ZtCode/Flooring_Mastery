@@ -19,7 +19,7 @@ public class TaxDaoImpl implements TaxDao {
     // Path to the file containing tax data
     private final String FILE_PATH = "src/main/java/Taxes.txt";
     // Backup path for the tax data file
-    private final String BACKUP_PATH = FILE_PATH + ".bak";
+//    private final String BACKUP_PATH = FILE_PATH + ".bak";
 
     /**
      * Constructor initializes the DAO by loading tax records from the file into in-memory storage.
@@ -116,50 +116,50 @@ public class TaxDaoImpl implements TaxDao {
      * Writes the in-memory tax records to the data file.
      */
     private void saveTaxesToFile() {
-        backupFile();
+//        backupFile();
         try (FileWriter writer = new FileWriter(FILE_PATH)) {
             for (Tax tax : taxes.values()) {
                 writer.write(tax.getStateAbbreviation() + "," + tax.getStateName() + "," + tax.getTaxRate() + "\n");
             }
         } catch (IOException ex) {
             System.err.println("Error writing taxes to file: " + ex.getMessage());
-            restoreBackup();  // if there's an error, restore from backup
+//            restoreBackup();  // if there's an error, restore from backup
         }
     }
 
     /**
      * Creates a backup of the current tax data file.
      */
-    private void backupFile() {
-        File sourceFile = new File(FILE_PATH);
-        File backupFile = new File(BACKUP_PATH);
-        try (FileInputStream fis = new FileInputStream(sourceFile);
-             FileOutputStream fos = new FileOutputStream(backupFile)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
-            }
-        } catch (IOException ex) {
-            System.err.println("Error creating backup: " + ex.getMessage());
-        }
-    }
+//    private void backupFile() {
+//        File sourceFile = new File(FILE_PATH);
+//        File backupFile = new File(BACKUP_PATH);
+//        try (FileInputStream fis = new FileInputStream(sourceFile);
+//             FileOutputStream fos = new FileOutputStream(backupFile)) {
+//            byte[] buffer = new byte[4096];
+//            int bytesRead;
+//            while ((bytesRead = fis.read(buffer)) != -1) {
+//                fos.write(buffer, 0, bytesRead);
+//            }
+//        } catch (IOException ex) {
+//            System.err.println("Error creating backup: " + ex.getMessage());
+//        }
+//    }
 
     /**
      * Restores tax data from the backup file.
      */
-    private void restoreBackup() {
-        File backupFile = new File(BACKUP_PATH);
-        File sourceFile = new File(FILE_PATH);
-        try (FileInputStream fis = new FileInputStream(backupFile);
-             FileOutputStream fos = new FileOutputStream(sourceFile)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
-            }
-        } catch (IOException ex) {
-            System.err.println("Error restoring backup: " + ex.getMessage());
-        }
-    }
+//    private void restoreBackup() {
+//        File backupFile = new File(BACKUP_PATH);
+//        File sourceFile = new File(FILE_PATH);
+//        try (FileInputStream fis = new FileInputStream(backupFile);
+//             FileOutputStream fos = new FileOutputStream(sourceFile)) {
+//            byte[] buffer = new byte[4096];
+//            int bytesRead;
+//            while ((bytesRead = fis.read(buffer)) != -1) {
+//                fos.write(buffer, 0, bytesRead);
+//            }
+//        } catch (IOException ex) {
+//            System.err.println("Error restoring backup: " + ex.getMessage());
+//        }
+//    }
 }

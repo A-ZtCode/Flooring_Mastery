@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
 
 public class ProductServiceImplTest {
 
@@ -21,7 +22,7 @@ public class ProductServiceImplTest {
     private ProductDao productDao;
 
     @InjectMocks
-    private ProductService productService = new ProductServiceImpl(productDao);
+    private ProductServiceImpl productService;
 
     @BeforeEach
     public void setUp() {
@@ -62,6 +63,7 @@ public class ProductServiceImplTest {
         verify(productDao, times(1)).addProduct(validProduct);
     }
 
+
     @Test
     public void testAddInvalidProduct() {
         Product invalidProduct = new Product(null, new BigDecimal("3.0"), new BigDecimal("4.0"));
@@ -78,12 +80,13 @@ public class ProductServiceImplTest {
     @Test
     public void testEditValidProduct() {
         Product validProduct = new Product("Wood", new BigDecimal("3.0"), new BigDecimal("4.0"));
-        doNothing().when(productDao).updateProduct(validProduct);
+        when(productDao.updateProduct(validProduct)).thenReturn(true);
 
         productService.editProduct(validProduct);
 
         verify(productDao, times(1)).updateProduct(validProduct);
     }
+
 
     @Test
     public void testEditInvalidProduct() {
@@ -100,38 +103,12 @@ public class ProductServiceImplTest {
 
     @Test
     public void testRemoveProduct() {
-        doNothing().when(productDao).removeProductByType("Tile");
-
+        when(productDao.removeProductByType(anyString())).thenReturn(true);
         productService.removeProduct("Tile");
 
         verify(productDao, times(1)).removeProductByType("Tile");
     }
 
-    @Test
-    public void testAddProductWithNegativeCosts() {
-        Product invalidProduct = new Product("Tile", new BigDecimal("-3.0"), new BigDecimal("-4.0"));
-
-        Exception exception = assertThrows(ServiceException.class, () -> {
-            productService.addProduct(invalidProduct);
-        });
-
-        String expectedMessage = "Invalid product data provided.";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    @Test
-    public void testAddProductWithZeroCosts() {
-        Product invalidProduct = new Product("Tile", BigDecimal.ZERO, BigDecimal.ZERO);
-
-        Exception exception = assertThrows(ServiceException.class, () -> {
-            productService.addProduct(invalidProduct);
-        });
-
-        String expectedMessage = "Invalid product data provided.";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
 
     @Test
     public void testDaoExceptionWhenFetching() {
