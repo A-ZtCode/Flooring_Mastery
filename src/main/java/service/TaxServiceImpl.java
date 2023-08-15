@@ -81,20 +81,28 @@ public class TaxServiceImpl implements TaxService {
      */
     @Override
     public Tax getTaxByState(String state) {
-        String stateAbbreviation = getStateAbbreviation(state);
+        try {
+            String stateAbbreviation = getStateAbbreviation(state);
         if (stateAbbreviation == null) {
             return null; // Return null if state is not found in the mapping.
         }
         return taxDao.getTaxByState(stateAbbreviation);
+    } catch (RuntimeException e) {
+        throw new ServiceException("Error fetching tax details.", e);
     }
+}
     /**
      * Retrieves a list of tax details for all states.
      */
     @Override
     public List<Tax> getAllTaxes() {
-        // Fetching all tax details from the DAO
-        return taxDao.getAllTaxes();
+        try {
+            return taxDao.getAllTaxes();
+        } catch (RuntimeException e) {
+            throw new ServiceException("Error fetching all tax details.", e);
+        }
     }
+
 
     /**
      * Adds a new tax record.
@@ -114,7 +122,7 @@ public class TaxServiceImpl implements TaxService {
                 throw new ServiceException("Invalid tax data provided.");
             }
         } catch (RuntimeException e) {
-            throw new ServiceException("Error while adding tax.", e);
+            throw new ServiceException(e.getMessage(), e);
         }
     }
 
@@ -124,15 +132,20 @@ public class TaxServiceImpl implements TaxService {
      * @param tax The updated tax details.
      * @throws ServiceException If the tax data is invalid or an error occurs during editing.
      */
+
     @Override
     public void editTax(Tax tax) {
-        // Validating the tax data before editing
-        if (validateTaxData(tax)) {
-            taxDao.updateTax(tax);
-        } else {
-            throw new ServiceException("Invalid tax data provided.");
+        try {
+            if (validateTaxData(tax)) {
+                taxDao.updateTax(tax);
+            } else {
+                throw new ServiceException("Invalid tax data provided.");
+            }
+        } catch (RuntimeException e) {
+            throw new ServiceException(e.getMessage(), e);
         }
     }
+
 
     /**
      * Removes tax details for a specified state abbreviation.
@@ -141,9 +154,13 @@ public class TaxServiceImpl implements TaxService {
      */
     @Override
     public void removeTax(String stateAbbreviation) {
-        // Removing tax details for a specific state
-        taxDao.removeTaxByState(stateAbbreviation);
+        try {
+            taxDao.removeTaxByState(stateAbbreviation);
+        } catch (RuntimeException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
+
 
     /**
      * Validates a given tax record.

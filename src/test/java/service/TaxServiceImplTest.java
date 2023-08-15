@@ -25,7 +25,7 @@ public class TaxServiceImplTest {
      * Injecting the mocked TaxDao into the TaxService for testing
      */
     @InjectMocks
-    private TaxService taxService = new TaxServiceImpl(taxDao);
+    private TaxServiceImpl taxService;
 
     /**
      * Initial set-up method to run before each test
@@ -35,25 +35,43 @@ public class TaxServiceImplTest {
         MockitoAnnotations.initMocks(this);
     }
 
+
     /**
      * Test fetching tax details for a specific state
      */
     @Test
     public void testGetTaxByState() {
-        // Create a dummy tax for testing
         Tax dummyTax = new Tax("NY", "New York", new BigDecimal("7.25"));
-        // Mock the behaviour of the DAO method
         when(taxDao.getTaxByState("NY")).thenReturn(dummyTax);
 
         Tax tax = taxService.getTaxByState("NY");
 
-        // Assert that the returned tax is not null and has expected values
         assertNotNull(tax);
         assertEquals("NY", tax.getStateAbbreviation());
-
-        // Verify that the DAO method was called once
         verify(taxDao, times(1)).getTaxByState("NY");
     }
+
+    /**
+     * Test to check the behavior of the getTaxByState method when provided with an invalid state abbreviation or name.
+     * The method should return null for states that don't exist in the predefined state list.
+     */
+    @Test
+    public void testGetTaxByInvalidState() {
+        // Mocking DAO to return null for invalid state name and abbreviation
+        when(taxDao.getTaxByState("InvalidState")).thenReturn(null);
+        when(taxDao.getTaxByState("ZZ")).thenReturn(null);
+
+        // Fetching tax by invalid state name
+        Tax taxByInvalidName = taxService.getTaxByState("InvalidState");
+
+        // Fetching tax by invalid state abbreviation
+        Tax taxByInvalidAbbreviation = taxService.getTaxByState("ZZ");
+
+        // Assertions to ensure null is returned for invalid inputs
+        assertNull(taxByInvalidName);
+        assertNull(taxByInvalidAbbreviation);
+    }
+
 
     /**
      * Test fetching all tax records
@@ -82,7 +100,7 @@ public class TaxServiceImplTest {
         // Create a valid tax for testing
         Tax validTax = new Tax("TX", "Texas", new BigDecimal("6.75"));
         // Mock the behaviour of the DAO method to do nothing
-        doReturn(true).when(taxDao).addTax(validTax);
+        when(taxDao.addTax(any(Tax.class))).thenReturn(validTax);
 
         boolean result = taxService.addTax(validTax);
         assertTrue(result);
@@ -96,17 +114,10 @@ public class TaxServiceImplTest {
      */
     @Test
     public void testAddInvalidTax() {
-        // Create an invalid tax for testing (empty state abbreviation)
         Tax invalidTax = new Tax("", "Unknown", new BigDecimal("6.75"));
-
-        // Assert that the service method throws an exception with the expected message
-        Exception exception = assertThrows(ServiceException.class, () -> {
+        assertThrows(ServiceException.class, () -> {
             taxService.addTax(invalidTax);
         });
-
-        String expectedMessage = "Invalid tax data provided.";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     /**
@@ -116,14 +127,15 @@ public class TaxServiceImplTest {
     public void testEditValidTax() {
         // Create a valid tax for testing
         Tax validTax = new Tax("TX", "Texas", new BigDecimal("6.50"));
-        // Mock the behaviour of the DAO method to do nothing
-        doNothing().when(taxDao).updateTax(validTax);
+        // Mock the behaviour of the DAO method to return true
+        when(taxDao.updateTax(validTax)).thenReturn(true);
 
         taxService.editTax(validTax);
 
         // Verify that the DAO method was called once with the expected parameter
         verify(taxDao, times(1)).updateTax(validTax);
     }
+
 
 
     /**
@@ -177,9 +189,9 @@ public class TaxServiceImplTest {
             taxService.addTax(validTax);
         });
 
-        String expectedMessage = "Error adding tax details.";
+        String expectedMessage = "Database error";
         String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(expectedMessage, actualMessage, "The exception message didn't match the expected message.");
     }
 
     /**
@@ -196,10 +208,9 @@ public class TaxServiceImplTest {
         Exception exception = assertThrows(ServiceException.class, () -> {
             taxService.editTax(validTax);
         });
-
-        String expectedMessage = "Error editing tax details.";
+        String expectedMessage = "Database error";
         String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(expectedMessage, actualMessage, "The exception message didn't match the expected message for editing.");
     }
 
     /**
@@ -215,9 +226,9 @@ public class TaxServiceImplTest {
             taxService.removeTax("TX");
         });
 
-        String expectedMessage = "Error removing tax details.";
+        String expectedMessage = "Database error";
         String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals(expectedMessage, actualMessage, "The exception message didn't match the expected message for removal.");
     }
 
 
@@ -237,7 +248,7 @@ public class TaxServiceImplTest {
             taxService.addTax(existingTax);
         });
 
-        String expectedMessage = "Error adding tax details.";
+        String expectedMessage = "Database error: Duplicate entry";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }

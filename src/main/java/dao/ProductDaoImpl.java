@@ -52,12 +52,12 @@ public class ProductDaoImpl implements ProductDao {
         if (products.containsKey(product.getProductType())) {
             throw new DataPersistenceException("Product of type " + product.getProductType() + " already exists!");
         }
-        backupFile(); // Backup before adding
+//        backupFile(); // Backup before adding
         products.put(product.getProductType(), product);
         try {
             saveProductsToFile(); // Save after adding
         } catch (DataPersistenceException ex) {
-            restoreBackup(); // Restore backup if there's an error
+//            restoreBackup(); // Restore backup if there's an error
             throw ex;
         }
     }
@@ -135,45 +135,45 @@ public class ProductDaoImpl implements ProductDao {
         }
     }
 
-    private final String BACKUP_PATH = FILE_PATH + ".bak"; // Backup
+//    private final String BACKUP_PATH = FILE_PATH + ".bak"; // Backup
 
     /**
      * Backup the current data file
      * Throws a DataPersistenceException if there's an issue creating a file backup.
      */
-    private void backupFile() {
-        File sourceFile = new File(FILE_PATH);
-        File backupFile = new File(BACKUP_PATH);
-        try (FileInputStream fis = new FileInputStream(sourceFile);
-             FileOutputStream fos = new FileOutputStream(backupFile)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
-            }
-        } catch (IOException ex) {
-            throw new DataPersistenceException("Error creating backup for products.", ex);
-        }
-    }
+//    private void backupFile() {
+//        File sourceFile = new File(FILE_PATH);
+//        File backupFile = new File(BACKUP_PATH);
+//        try (FileInputStream fis = new FileInputStream(sourceFile);
+//             FileOutputStream fos = new FileOutputStream(backupFile)) {
+//            byte[] buffer = new byte[4096];
+//            int bytesRead;
+//            while ((bytesRead = fis.read(buffer)) != -1) {
+//                fos.write(buffer, 0, bytesRead);
+//            }
+//        } catch (IOException ex) {
+//            throw new DataPersistenceException("Error creating backup for products.", ex);
+//        }
+//    }
 
     /**
      * Restore from the backup file
      * Throws a DataPersistenceException if there's an issue restoring a file ..
      */
-    private void restoreBackup() {
-        File backupFile = new File(BACKUP_PATH);
-        File sourceFile = new File(FILE_PATH);
-        try (FileInputStream fis = new FileInputStream(backupFile);
-             FileOutputStream fos = new FileOutputStream(sourceFile)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
-            }
-        } catch (IOException ex) {
-            throw new DataPersistenceException("Error restoring backup for products.", ex);
-        }
-    }
+//    private void restoreBackup() {
+//        File backupFile = new File(BACKUP_PATH);
+//        File sourceFile = new File(FILE_PATH);
+//        try (FileInputStream fis = new FileInputStream(backupFile);
+//             FileOutputStream fos = new FileOutputStream(sourceFile)) {
+//            byte[] buffer = new byte[4096];
+//            int bytesRead;
+//            while ((bytesRead = fis.read(buffer)) != -1) {
+//                fos.write(buffer, 0, bytesRead);
+//            }
+//        } catch (IOException ex) {
+//            throw new DataPersistenceException("Error restoring backup for products.", ex);
+//        }
+//    }
 
 }
 

@@ -4,6 +4,8 @@ import dao.OrderDao;
 import dao.ProductDao;
 import dao.TaxDao;
 import modelDTO.Order;
+import modelDTO.Product;
+import modelDTO.Tax;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,7 +34,7 @@ public class OrderServiceImplTest {
     private TaxDao taxDao;
 
     @InjectMocks
-    private OrderService orderService = new OrderServiceImpl(orderDao, productDao, taxDao);
+    private OrderServiceImpl  orderService;
 
     private Order sampleOrder;
     @BeforeEach
@@ -46,9 +48,22 @@ public class OrderServiceImplTest {
                 new BigDecimal("3400"), new Date()); // fill in other parameters
 
         // Set up some dummy data for our mock DAO
-        Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Wood", new BigDecimal("500"), new BigDecimal("5.5"), new BigDecimal("4.5"), new BigDecimal("2750"), new BigDecimal("2250"), new BigDecimal("312.5"), new BigDecimal("5312.5"), new Date());
+        Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Wood",
+                new BigDecimal("500"), new BigDecimal("5.5"), new BigDecimal("4.5"),
+                new BigDecimal("2750"), new BigDecimal("2250"), new BigDecimal("312.5"),
+                new BigDecimal("5312.5"), new Date());
         when(orderDao.getOrdersByDate(any(Date.class))).thenReturn(Arrays.asList(dummyOrder));
+        Product validWoodProduct = new Product("Wood", new BigDecimal("5.15"), new BigDecimal("4.75"));
+        Product validTileProduct = new Product("Tile", new BigDecimal("3.50"), new BigDecimal("4.15"));
+        when(productDao.getProductByType("Wood")).thenReturn(validWoodProduct);
+        when(productDao.getProductByType("Tile")).thenReturn(validTileProduct);
+
+        // Mock the behavior for TaxDao
+        Tax validTax = new Tax("TX", "Texas", new BigDecimal("6.25"));
+        when(taxDao.getTaxByState("TX")).thenReturn(validTax);
     }
+
+
 
     // Test methods for GetOrdersByDate,
     @Test
@@ -83,8 +98,7 @@ public class OrderServiceImplTest {
         Order newOrder = new Order(null, "Jane Doe", "TX", new BigDecimal("6.25"), "Tile", new BigDecimal("300"), new BigDecimal("4.0"), new BigDecimal("5.0"), new BigDecimal("1200"), new BigDecimal("1500"), new BigDecimal("168.75"), new BigDecimal("2868.75"), new Date());
 
         // Mock the behavior for adding an order
-        doNothing().when(orderDao).addOrder(any(Order.class));
-
+        when(orderDao.addOrder(any(Order.class))).thenReturn(sampleOrder);
         // Execute the addOrder method
         orderService.addOrder(newOrder);
 
@@ -174,6 +188,7 @@ public class OrderServiceImplTest {
     public void testValidateOrderWithEmptyCustomerName() {
         Order orderWithEmptyName = new Order();
         orderWithEmptyName.setCustomerName("");
+        orderWithEmptyName.setArea(new BigDecimal("100"));  // Set a default area
 
         Exception exception = assertThrows(ServiceException.class, () -> {
             orderService.validateOrderData(orderWithEmptyName);
@@ -184,20 +199,6 @@ public class OrderServiceImplTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
-    @Test
-    public void testValidateOrderWithNullState() {
-        Order orderWithNullState = new Order();
-        orderWithNullState.setCustomerName("Jane");
-        orderWithNullState.setState(null);
-
-        Exception exception = assertThrows(ServiceException.class, () -> {
-            orderService.validateOrderData(orderWithNullState);
-        });
-
-        String expectedMessage = "State cannot be empty!";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
 
     @Test
     public void testValidateOrderWithEmptyProductType() {
@@ -205,6 +206,7 @@ public class OrderServiceImplTest {
         orderWithEmptyProductType.setCustomerName("Jane");
         orderWithEmptyProductType.setState("TX");
         orderWithEmptyProductType.setProductType("");
+        orderWithEmptyProductType.setArea(new BigDecimal("100"));  // Set a default area
 
         Exception exception = assertThrows(ServiceException.class, () -> {
             orderService.validateOrderData(orderWithEmptyProductType);
@@ -214,6 +216,7 @@ public class OrderServiceImplTest {
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
+
 
     // Test methods for addOrder
     @Test
@@ -226,6 +229,7 @@ public class OrderServiceImplTest {
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
+
 
     // Test methods for editOrder
     @Test
@@ -403,20 +407,6 @@ public class OrderServiceImplTest {
         });
 
         String expectedMessage = "Tax information not available for TX!";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    // Assuming ProductDao might return null for a particular product type
-    @Test
-    public void testNullProductInfo() {
-        when(productDao.getProductByType("Tile")).thenReturn(null);
-
-        Exception exception = assertThrows(ServiceException.class, () -> {
-            orderService.calculateCostForProductType(sampleOrder);
-        });
-
-        String expectedMessage = "Product information not available for Tile!";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }

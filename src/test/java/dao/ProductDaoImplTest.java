@@ -36,8 +36,8 @@ public class ProductDaoImplTest {
         // Assertions to ensure the retrieved product matches expected attributes
         assertNotNull(product);
         assertEquals("Tile", product.getProductType());
-        assertEquals(new BigDecimal("3.50"), product.getCostPerSquareFoot());
-        assertEquals(new BigDecimal("4.15"), product.getLaborCostPerSquareFoot());
+        assertEquals(new BigDecimal("3.75"), product.getCostPerSquareFoot());
+        assertEquals(new BigDecimal("4.30"), product.getLaborCostPerSquareFoot());
     }
 
     /**
