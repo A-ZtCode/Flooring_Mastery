@@ -5,6 +5,7 @@ import dao.ProductDao;
 import dao.TaxDao;
 import modelDTO.Order;
 import modelDTO.Product;
+import modelDTO.Tax;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -47,9 +48,22 @@ public class OrderServiceImplTest {
                 new BigDecimal("3400"), new Date()); // fill in other parameters
 
         // Set up some dummy data for our mock DAO
-        Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Wood", new BigDecimal("500"), new BigDecimal("5.5"), new BigDecimal("4.5"), new BigDecimal("2750"), new BigDecimal("2250"), new BigDecimal("312.5"), new BigDecimal("5312.5"), new Date());
+        Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Wood",
+                new BigDecimal("500"), new BigDecimal("5.5"), new BigDecimal("4.5"),
+                new BigDecimal("2750"), new BigDecimal("2250"), new BigDecimal("312.5"),
+                new BigDecimal("5312.5"), new Date());
         when(orderDao.getOrdersByDate(any(Date.class))).thenReturn(Arrays.asList(dummyOrder));
+        Product validWoodProduct = new Product("Wood", new BigDecimal("5.15"), new BigDecimal("4.75"));
+        Product validTileProduct = new Product("Tile", new BigDecimal("3.50"), new BigDecimal("4.15"));
+        when(productDao.getProductByType("Wood")).thenReturn(validWoodProduct);
+        when(productDao.getProductByType("Tile")).thenReturn(validTileProduct);
+
+        // Mock the behavior for TaxDao
+        Tax validTax = new Tax("TX", "Texas", new BigDecimal("6.25"));
+        when(taxDao.getTaxByState("TX")).thenReturn(validTax);
     }
+
+
 
     // Test methods for GetOrdersByDate,
     @Test
