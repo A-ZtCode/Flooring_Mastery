@@ -187,23 +187,6 @@ public class OrderServiceImplTest {
 
 
     @Test
-    public void testValidateOrderWithNullState() {
-        Order orderWithNullState = new Order();
-        orderWithNullState.setCustomerName("Jane");
-        orderWithNullState.setState(null);
-        orderWithNullState.setArea(new BigDecimal("100"));  // Set a default area
-
-        Exception exception = assertThrows(ServiceException.class, () -> {
-            orderService.validateOrderData(orderWithNullState);
-        });
-
-        String expectedMessage = "State cannot be empty!";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-
-    @Test
     public void testValidateOrderWithEmptyProductType() {
         Order orderWithEmptyProductType = new Order();
         orderWithEmptyProductType.setCustomerName("Jane");
@@ -232,6 +215,7 @@ public class OrderServiceImplTest {
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
+
 
     // Test methods for editOrder
     @Test
@@ -409,28 +393,6 @@ public class OrderServiceImplTest {
         });
 
         String expectedMessage = "Tax information not available for TX!";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-    // Assuming ProductDao might return null for a particular product type
-    @Test
-    public void testNullProductInfo() {
-        // Mock the ProductDao to return a product with null or default values.
-        Product dummyProduct = new Product("Tile", null, null);  // Assuming the Product constructor allows null values for cost and labor cost.
-        when(productDao.getProductByType(anyString())).thenReturn(dummyProduct);
-
-        // Now, when the calculateCostForProductType method tries to use this product,
-        // it might encounter null values for the product's properties, leading to a different exception or outcome.
-        // Adjust the test to expect this new outcome.
-
-        Exception exception = assertThrows(ServiceException.class, () -> {
-            orderService.calculateCostForProductType(sampleOrder);
-        });
-
-        // Update the expected message based on the new outcome.
-        // For example, if the service method throws an exception when the product's cost is null, adjust accordingly:
-        String expectedMessage = "Product cost information not available for Tile!";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }

@@ -35,9 +35,9 @@ public class OrderDaoImpl extends OrderDao {
      * @param date The date to get the backup file path for.
      * @return The backup file path.
      */
-    private String getBackupFilePathForDate(Date date) {
-        return getFilePathForDate(date) + ".bak";
-    }
+//    private String getBackupFilePathForDate(Date date) {
+//        return getFilePathForDate(date) + ".bak";
+//    }
 
     /**
      * Constructs an instance and initializes it by loading all orders from the files.
@@ -272,7 +272,7 @@ public class OrderDaoImpl extends OrderDao {
         private void saveOrdersToFile(Date date) {
             String filePath = getFilePathForDate(date);
 
-            backupFile(date);
+//            backupFile(date);
 
             SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
 
@@ -297,65 +297,65 @@ public class OrderDaoImpl extends OrderDao {
                 }
             } catch (IOException ex) {
                 System.err.println("Error writing orders to file: " + ex.getMessage());
-                restoreBackup(date);  // if there's an error, restore from backup
+//                restoreBackup(date);  // if there's an error, restore from backup
             }
         }
 
-    /**
-     * Creates a backup of the data file for a specific date.
-     *
-     * @param date The date for which to create a backup.
-     */
-    private void backupFile(Date date) {
-        File sourceFile = new File(getFilePathForDate(date));
-
-        // Check if the source file exists. If not, create an empty one.
-        if (!sourceFile.exists()) {
-            try {
-                boolean created = sourceFile.createNewFile();
-                if (!created) {
-                    System.err.println("Failed to create new file: " + sourceFile.getAbsolutePath());
-                    return; // return if file creation fails
-                }
-            } catch (IOException ex) {
-                System.err.println("Error creating new file: " + sourceFile.getAbsolutePath());
-                ex.printStackTrace();
-                return;
-            }
-        }
-
-        File backupFile = new File(getBackupFilePathForDate(date));
-        try (FileInputStream fis = new FileInputStream(sourceFile);
-             FileOutputStream fos = new FileOutputStream(backupFile)) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                fos.write(buffer, 0, bytesRead);
-            }
-        } catch (IOException ex) {
-            System.err.println("Error creating backup: " + ex.getMessage());
-        }
-    }
+//    /**
+//     * Creates a backup of the data file for a specific date.
+//     *
+//     * @param date The date for which to create a backup.
+//     */
+//    private void backupFile(Date date) {
+//        File sourceFile = new File(getFilePathForDate(date));
+//
+//        // Check if the source file exists. If not, create an empty one.
+//        if (!sourceFile.exists()) {
+//            try {
+//                boolean created = sourceFile.createNewFile();
+//                if (!created) {
+//                    System.err.println("Failed to create new file: " + sourceFile.getAbsolutePath());
+//                    return; // return if file creation fails
+//                }
+//            } catch (IOException ex) {
+//                System.err.println("Error creating new file: " + sourceFile.getAbsolutePath());
+//                ex.printStackTrace();
+//                return;
+//            }
+//        }
+//
+//        File backupFile = new File(getBackupFilePathForDate(date));
+//        try (FileInputStream fis = new FileInputStream(sourceFile);
+//             FileOutputStream fos = new FileOutputStream(backupFile)) {
+//            byte[] buffer = new byte[4096];
+//            int bytesRead;
+//            while ((bytesRead = fis.read(buffer)) != -1) {
+//                fos.write(buffer, 0, bytesRead);
+//            }
+//        } catch (IOException ex) {
+//            System.err.println("Error creating backup: " + ex.getMessage());
+//        }
+//    }
 
     /**
      * Restores data from a backup for a specific date.
      *
      * @param date The date for which to restore data.
      */
-        private void restoreBackup(Date date) {
-            File backupFile = new File(getBackupFilePathForDate(date));
-            File sourceFile = new File(getFilePathForDate(date));
-            try (FileInputStream fis = new FileInputStream(backupFile);
-                 FileOutputStream fos = new FileOutputStream(sourceFile)) {
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = fis.read(buffer)) != -1) {
-                    fos.write(buffer, 0, bytesRead);
-                }
-            } catch (IOException ex) {
-                System.err.println("Error restoring backup: " + ex.getMessage());
-            }
-        }
+//        private void restoreBackup(Date date) {
+//            File backupFile = new File(getBackupFilePathForDate(date));
+//            File sourceFile = new File(getFilePathForDate(date));
+//            try (FileInputStream fis = new FileInputStream(backupFile);
+//                 FileOutputStream fos = new FileOutputStream(sourceFile)) {
+//                byte[] buffer = new byte[4096];
+//                int bytesRead;
+//                while ((bytesRead = fis.read(buffer)) != -1) {
+//                    fos.write(buffer, 0, bytesRead);
+//                }
+//            } catch (IOException ex) {
+//                System.err.println("Error restoring backup: " + ex.getMessage());
+//            }
+//        }
 
     /**
      * Parses a date from a file name.

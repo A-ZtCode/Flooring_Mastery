@@ -78,7 +78,13 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void addOrder(Order order) {
-        if (order.getArea().compareTo(BigDecimal.ZERO) < 0) {
+        if (order == null) {
+            throw new ServiceException("Order cannot be null!");
+        }
+        if (order.getCustomerName() == null || order.getCustomerName().trim().isEmpty()) {
+            throw new ServiceException("Customer name cannot be empty!");
+        }
+        if (order.getArea() == null || order.getArea().compareTo(BigDecimal.ZERO) <= 0) {
             throw new ServiceException("Area cannot be zero or negative!");
         }
 //        String stateAbbreviation = getStateAbbreviation(order.getState());
