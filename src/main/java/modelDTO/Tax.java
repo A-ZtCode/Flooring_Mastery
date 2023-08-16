@@ -6,8 +6,7 @@ import java.math.BigDecimal;
  * The Tax class represents the tax rate associated with a specific state.
  *
  * Each state, identified by both its name and abbreviation, has a corresponding tax rate.
- * This class provides methods to get and set these attributes, and also a toString method
- * for a formatted output.
+ * This class provides methods to get and set these attributes, and also a toString method for a formatted output.
  */
 public class Tax {
 
@@ -60,7 +59,6 @@ public class Tax {
 
     /**
      * Provides a formatted string representation of the Tax object.
-     *
      * @return A string in the format: "State: [stateAbbreviation], Tax Rate: [taxRate]%".
      */
     @Override

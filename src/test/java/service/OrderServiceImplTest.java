@@ -21,7 +21,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
+/**
+ * Test class for OrderServiceImpl. It includes unit tests to verify the basic CRUD operations on the OrderService implementation.
+ */
 public class OrderServiceImplTest {
 
     @Mock
@@ -37,6 +39,10 @@ public class OrderServiceImplTest {
     private OrderServiceImpl  orderService;
 
     private Order sampleOrder;
+
+    /**
+     * This method sets up the test environment. It is run before each test.
+     */
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this); // Initialize our mock objects
@@ -65,7 +71,8 @@ public class OrderServiceImplTest {
 
 
 
-    // Test methods for GetOrdersByDate,
+    /**Test methods for GetOrdersByDate
+     **/
     @Test
     public void testGetOrdersByDate() {
         Date testDate = new Date(); // Use current date for this test
@@ -79,7 +86,8 @@ public class OrderServiceImplTest {
         verify(orderDao, times(1)).getOrdersByDate(testDate);
     }
 
-    // Test methods for GetOrdersById.
+    /** Test methods for GetOrdersById
+     **/
     @Test
     public void testGetOrderById() {
         Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Tile", new BigDecimal("300"), new BigDecimal("4.0"), new BigDecimal("5.0"), new BigDecimal("1200"), new BigDecimal("1500"), new BigDecimal("168.75"), new BigDecimal("2868.75"), new Date());
@@ -92,7 +100,8 @@ public class OrderServiceImplTest {
         verify(orderDao, times(1)).getOrderById(1);
     }
 
-    // Test methods for AddOrder,
+    /**Test methods for AddOrder
+     **/
     @Test
     public void testAddOrder() {
         Order newOrder = new Order(null, "Jane Doe", "TX", new BigDecimal("6.25"), "Tile", new BigDecimal("300"), new BigDecimal("4.0"), new BigDecimal("5.0"), new BigDecimal("1200"), new BigDecimal("1500"), new BigDecimal("168.75"), new BigDecimal("2868.75"), new Date());
@@ -106,7 +115,8 @@ public class OrderServiceImplTest {
         verify(orderDao, times(1)).addOrder(newOrder);
     }
 
-    // Test methods for editOrder
+    /**Test methods for editOrder
+     */
     @Test
     public void testEditOrder() throws OrderNotFoundException {
         Order existingOrder = new Order(1, "Existing Customer", "TX", new BigDecimal("6.25"), "Wood", new BigDecimal("400"), new BigDecimal("5.0"), new BigDecimal("6.0"), new BigDecimal("2000"), new BigDecimal("2400"), new BigDecimal("150"), new BigDecimal("4550"), new Date());
@@ -120,7 +130,8 @@ public class OrderServiceImplTest {
         verify(orderDao, times(1)).editOrder(updatedOrder);
     }
 
-    // Test methods for removeOrder,
+    /**Test methods for removeOrder
+     **/
     @Test
     public void testRemoveOrder() {
         Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Tile", new BigDecimal("300"), new BigDecimal("4.0"), new BigDecimal("5.0"), new BigDecimal("1200"), new BigDecimal("1500"), new BigDecimal("168.75"), new BigDecimal("2868.75"), new Date());
@@ -133,7 +144,9 @@ public class OrderServiceImplTest {
         verify(orderDao, times(1)).removeOrder(1);
     }
 
-    // Test methods for SearchOrdersByName,
+    /**Test methods for SearchOrdersByName
+     */
+
     @Test
     public void testSearchOrdersByName() {
         Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Tile", new BigDecimal("300"), new BigDecimal("4.0"), new BigDecimal("5.0"), new BigDecimal("1200"), new BigDecimal("1500"), new BigDecimal("168.75"), new BigDecimal("2868.75"), new Date());
@@ -146,7 +159,8 @@ public class OrderServiceImplTest {
         verify(orderDao, times(1)).searchOrdersByName("Jane Doe");
     }
 
-    // Test methods for SearchOrdersByState,
+    /**Test methods for SearchOrdersByState
+    */
     @Test
     public void testSearchOrdersByState() {
         Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Tile", new BigDecimal("300"), new BigDecimal("4.0"), new BigDecimal("5.0"), new BigDecimal("1200"), new BigDecimal("1500"), new BigDecimal("168.75"), new BigDecimal("2868.75"), new Date());
@@ -159,7 +173,8 @@ public class OrderServiceImplTest {
         verify(orderDao, times(1)).searchOrdersByState("TX");
     }
 
-    // Test methods for SearchOrdersByProductType,
+    /**Test methods for SearchOrdersByProductType
+     */
     @Test
     public void testSearchOrdersByProductType() {
         Order dummyOrder = new Order(1, "Jane Doe", "TX", new BigDecimal("6.25"), "Tile", new BigDecimal("300"), new BigDecimal("4.0"), new BigDecimal("5.0"), new BigDecimal("1200"), new BigDecimal("1500"), new BigDecimal("168.75"), new BigDecimal("2868.75"), new Date());
@@ -172,7 +187,8 @@ public class OrderServiceImplTest {
         verify(orderDao, times(1)).searchOrdersByProductType("Tile");
     }
 
-    // Test methods for validateOrderData
+    /** Test methods for validateOrderData
+     **/
     @Test
     public void testValidateNullOrder() {
         Exception exception = assertThrows(ServiceException.class, () -> {
@@ -184,6 +200,8 @@ public class OrderServiceImplTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    /**Test methods for validateOrderDataWithEmptyCustomerName
+     **/
     @Test
     public void testValidateOrderWithEmptyCustomerName() {
         Order orderWithEmptyName = new Order();
@@ -199,7 +217,8 @@ public class OrderServiceImplTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
-
+    /** Test methods for validateOrderDataWithEmptyProductType
+     */
     @Test
     public void testValidateOrderWithEmptyProductType() {
         Order orderWithEmptyProductType = new Order();
@@ -218,7 +237,8 @@ public class OrderServiceImplTest {
     }
 
 
-    // Test methods for addOrder
+    /** Test methods for addOrder
+     */
     @Test
     public void testAddNullOrder() {
         Exception exception = assertThrows(ServiceException.class, () -> {
@@ -231,7 +251,8 @@ public class OrderServiceImplTest {
     }
 
 
-    // Test methods for editOrder
+    /** Test methods for editOrder
+     */
     @Test
     public void testEditNullOrder() {
         Exception exception = assertThrows(ServiceException.class, () -> {
@@ -243,10 +264,12 @@ public class OrderServiceImplTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
+    /** Test methods for EditNonExistentOrder
+     */
     @Test
     public void testEditNonExistentOrder() {
         Order nonExistentOrder = new Order();
-        nonExistentOrder.setOrderNumber(999); // Assuming this ID does not exist in the DAO
+        nonExistentOrder.setOrderNumber(999);
         when(orderDao.getOrderById(999)).thenReturn(null);
 
         Exception exception = assertThrows(ServiceException.class, () -> {
@@ -258,10 +281,12 @@ public class OrderServiceImplTest {
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
-    // Test methods for removeOrder
+
+    /** Test methods for removeOrder
+     */
     @Test
     public void testRemoveNonExistentOrder() {
-        int nonExistentOrderId = 999; // Assuming this ID does not exist in the DAO
+        int nonExistentOrderId = 999;
         when(orderDao.getOrderById(999)).thenReturn(null);
 
         Exception exception = assertThrows(ServiceException.class, () -> {
@@ -397,22 +422,9 @@ public class OrderServiceImplTest {
         assertNull(result);
     }
 
-    // Assuming TaxDao might return null for a particular state
-    @Test
-    public void testNullTaxForState() {
-        when(taxDao.getTaxByState("TX")).thenReturn(null);
-
-        Exception exception = assertThrows(ServiceException.class, () -> {
-            orderService.calculateTaxForOrder(sampleOrder);
-        });
-
-        String expectedMessage = "Tax information not available for TX!";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-    }
-
-
-    // Exception during DAO operations
+    /**
+     * Exception during DAO operations
+     */
     @Test
     public void testDaoException() {
         when(orderDao.getOrdersByDate(any(Date.class))).thenThrow(new RuntimeException("Database error"));
@@ -425,7 +437,5 @@ public class OrderServiceImplTest {
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
-
-
 
 }

@@ -10,20 +10,24 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of the ProductDao interface. Provides methods
- * to interact with the product data source, which in this case is a file.
+ * Implementation of the ProductDao interface. Provides methods to interact with the product data source, which in this case is a file.
  */
 public class ProductDaoImpl implements ProductDao {
 
     // In-memory storage for products, using a Map for faster access based on product type.
     private final Map<String, Product> products = new HashMap<>();
+    private String filePath;
     // Path to the file that contains the product data.
-    private final String FILE_PATH = "src/main/java/Products.txt";
+    public ProductDaoImpl() {
+        this.filePath = "src/main/java/Products.txt";
+        loadProductsFromFile();
+    }
 
     /**
      * Constructor loads products from the file into memory.
      */
-    public ProductDaoImpl() {
+    public ProductDaoImpl(String filePath) {
+        this.filePath = filePath;
         loadProductsFromFile();
     }
 
@@ -56,13 +60,11 @@ public class ProductDaoImpl implements ProductDao {
         if (products.containsKey(product.getProductType())) {
             throw new DataPersistenceException("Product of type " + product.getProductType() + " already exists!");
         }
-        // If you choose to update the existing product:
+        // Update the existing product:
         products.put(product.getProductType(), product);
         saveProductsToFile(); // Save after updating
         return;
     }
-
-
 
     /**
      * Updates an existing product in in-memory storage and then saves to file.
@@ -97,7 +99,7 @@ public class ProductDaoImpl implements ProductDao {
      * Throws a DaoException if there's an issue reading from the file.
      */
     private void loadProductsFromFile() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             reader.readLine();  // This will skip the first line, which is the header
 
             String line;
@@ -122,12 +124,13 @@ public class ProductDaoImpl implements ProductDao {
         }
     }
 
+
     /**
      * Saves the current in-memory products to the file.
      * Throws a DaoException if there's an issue writing to the file.
      */
     private void saveProductsToFile() {
-        try (FileWriter writer = new FileWriter(FILE_PATH)) {
+        try (FileWriter writer = new FileWriter(filePath)) {
             for (Product product : products.values()) {
                 writer.write(product.getProductType() + "," + product.getCostPerSquareFoot() + "," + product.getLaborCostPerSquareFoot() + "\n");
             }
