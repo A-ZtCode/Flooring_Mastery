@@ -1,2 +1,2 @@
 # Flooring_Mastery
- Create an application that can read and write flooring orders.
+ Creating an application that can read and write flooring orders.
