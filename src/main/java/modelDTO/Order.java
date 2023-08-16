@@ -4,11 +4,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * The Order class represents a customer's order, detailing the product they purchased,
- * the tax rate applied, and various costs related to the purchase.
+ * The Order class represents a customer's order, detailing the product they purchased, the tax rate applied, and various costs related to the purchase.
  *
- * The order has a unique order number, customer details, and details about the product
- * they purchased, including the type of product, its area, and various costs.
+ * The order has a unique order number, customer details, and details about the product they purchased, including the type of product, its area, and various costs.
  */
 public class Order {
     // The unique identifier for the order
@@ -21,7 +19,7 @@ public class Order {
     private BigDecimal taxRate;
     // Type of product ordered
     private String productType;
-    // Area of the product ordered (typically in square feet or similar unit)
+    // Area of the product ordered ( in square feet)
     private BigDecimal area;
     // Cost of the product per unit area
     private BigDecimal costPerSquareFoot;

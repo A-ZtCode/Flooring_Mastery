@@ -61,7 +61,7 @@ public class MenuView {
     public void displayAvailableStates(List<Tax> availableTaxes) {
         System.out.println("Available States:");
         for (Tax tax : availableTaxes) {
-            System.out.println(tax.getStateAbbreviation());
+            System.out.println(tax.getStateName() + " (" + tax.getStateAbbreviation() + ")");
         }
     }
 

@@ -188,7 +188,7 @@ public class OrderServiceImpl implements OrderService {
             throw new ServiceException("Order cannot be null!");
         }
         if (order.getArea().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ServiceException("Area cannot be zero or negative!");
+            throw new ServiceException("Area cannot be zero or negative! The minimum area must be 100");
         }
         if (order.getCustomerName() == null || order.getCustomerName().isEmpty()) {
             throw new ServiceException("Customer name cannot be empty!");

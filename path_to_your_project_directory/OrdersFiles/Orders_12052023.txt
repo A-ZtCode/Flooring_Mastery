@@ -1,2 +1,0 @@
-OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total,OrderDate
-1,Mercy Azeta,AZ,5.60,Marble,120,5.95,6.25,714.00,750.00,81.98400,1545.98400,12-05-2023

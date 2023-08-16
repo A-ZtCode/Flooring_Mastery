@@ -25,7 +25,6 @@ public class TaxDaoImpl implements TaxDao {
         // Load taxes into the in-memory map during instantiation
         loadTaxesFromFile().forEach(tax -> {
             taxes.put(tax.getStateAbbreviation(), tax);
-            System.out.println("Loaded: " + tax.getStateAbbreviation());
         });
     }
 
@@ -35,7 +34,7 @@ public class TaxDaoImpl implements TaxDao {
     public Tax getTaxByState(String state) {
         Tax tax = taxes.get(state);
         if (tax == null) {
-            System.out.println("State not found in in-memory map: " + state);
+            System.out.println("State not found: " + state);
         }
         return tax;
     }
@@ -109,7 +108,6 @@ public class TaxDaoImpl implements TaxDao {
         }
         return fileTaxes;
     }
-
 
     /**
      * Writes the in-memory tax records to the data file.

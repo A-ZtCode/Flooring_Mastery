@@ -1,4 +1,8 @@
-TX,Texas,8.00
+CO,Colorado,2.90
+KY,Kentucky,6.00
+AR,Arkansas,6.50
+CT,Connecticut,6.35
+MA,Massachusetts,6.25
 LA,Louisiana,4.45
 MD,Maryland,6.00
 IA,Iowa,6.00
