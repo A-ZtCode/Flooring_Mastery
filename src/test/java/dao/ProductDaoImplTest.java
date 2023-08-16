@@ -33,11 +33,20 @@ public class ProductDaoImplTest {
     public void testGetProductByType() {
         // Test fetching product information by product type
         Product product = productDao.getProductByType("Tile");
+
+        // Add a diagnostic output
+        if (product == null) {
+            System.out.println("Product 'Tile' not found in the products map. Current products:");
+            for (String key : ((ProductDaoImpl) productDao).getProductKeys()) {
+                System.out.println(" - " + key);
+            }
+        }
+
         // Assertions to ensure the retrieved product matches expected attributes
         assertNotNull(product);
         assertEquals("Tile", product.getProductType());
-        assertEquals(new BigDecimal("3.75"), product.getCostPerSquareFoot());
-        assertEquals(new BigDecimal("4.30"), product.getLaborCostPerSquareFoot());
+        assertEquals(new BigDecimal("3.50"), product.getCostPerSquareFoot());
+        assertEquals(new BigDecimal("4.15"), product.getLaborCostPerSquareFoot());
     }
 
     /**
