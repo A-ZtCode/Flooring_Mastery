@@ -32,7 +32,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     /**
-     * Returns a list of product keys (typically product types) from the product data source.
+     * Returns a list of product keys (product types) from the product data source.
      * @return A list containing the keys of all products.
      */
     public List<String> getProductKeys() {
