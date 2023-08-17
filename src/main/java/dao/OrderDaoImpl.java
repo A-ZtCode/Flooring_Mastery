@@ -17,7 +17,6 @@ public class OrderDaoImpl extends OrderDao {
     private final Map<Integer, Order> orders = new HashMap<>();
     private static final String BASE_PATH = "src/main/java/OrdersFiles/";
 
-
     /**
      * Returns the file path for a given date.
      *
@@ -27,16 +26,6 @@ public class OrderDaoImpl extends OrderDao {
     private String getFilePathForDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("MMddyyyy");
         return BASE_PATH + "Orders_" + sdf.format(date) + ".txt";
-    }
-
-    /**
-     * Returns the backup file path for a given date.
-     *
-     * @param date The date to get the backup file path for.
-     * @return The backup file path.
-     */
-    private String getBackupFilePathForDate(Date date) {
-        return getFilePathForDate(date) + ".bak";
     }
 
     /**
@@ -97,7 +86,6 @@ public class OrderDaoImpl extends OrderDao {
 
     /**
      * Removes an order from the in-memory storage and updates the file.
-     *
      * @param orderId The ID of the order to be removed.
      */
     @Override
@@ -110,7 +98,6 @@ public class OrderDaoImpl extends OrderDao {
 
     /**
      * Retrieves orders by a specific date.
-     *
      * @param date The date to retrieve orders for.
      * @return A list of orders for the specified date.
      */
@@ -126,7 +113,6 @@ public class OrderDaoImpl extends OrderDao {
 
     /**
      * Retrieves an order by its order ID.
-     *
      * @param orderId The ID of the order to retrieve.
      * @return The order if found, otherwise null.
      */
@@ -137,7 +123,6 @@ public class OrderDaoImpl extends OrderDao {
 
     /**
      * Searches orders by a customer's name.
-     *
      * @param customerName The customer's name to search by.
      * @return A list of orders that match the customer's name.
      */
@@ -154,7 +139,6 @@ public class OrderDaoImpl extends OrderDao {
 
     /**
      * Retrieves all orders from the in-memory storage.
-     *
      * @return A list of all orders.
      */
     @Override
@@ -180,7 +164,6 @@ public class OrderDaoImpl extends OrderDao {
 
     /**
      * Searches orders by state.
-     *
      * @param state The state to search by.
      * @return A list of orders that match the state.
      */
@@ -196,7 +179,6 @@ public class OrderDaoImpl extends OrderDao {
     }
     /**
      * Generates the next order ID.
-     *
      * @return The next order ID.
      */
     private int getNextOrderId() {
@@ -209,7 +191,6 @@ public class OrderDaoImpl extends OrderDao {
 
     /**
      * Loads orders from a file for a specific date.
-     *
      * @param date The date to load orders for.
      * @return A list of orders loaded from the file.
      */
@@ -247,13 +228,10 @@ public class OrderDaoImpl extends OrderDao {
 
     /**
      * Parses a date from a string.
-     *
      * @param dateString The string representation of the date.
      * @return The parsed date.
      */
     private Date parseDate(String dateString) {
-        // Implement date parsing logic
-        // Placeholder implementation, you need to replace with actual parsing logic
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
             return sdf.parse(dateString);
@@ -265,7 +243,6 @@ public class OrderDaoImpl extends OrderDao {
 
     /**
      * Saves all orders to a file for a specific date.
-     *
      * @param date The date for which to save orders.
      */
         private void saveOrdersToFile(Date date) {
@@ -273,7 +250,7 @@ public class OrderDaoImpl extends OrderDao {
 
             SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
 
-            try (FileWriter writer = new FileWriter(filePath, false)) {  // false means do not append, overwrite the file
+            try (FileWriter writer = new FileWriter(filePath, false)) {
                 writer.write("OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot,LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total,OrderDate\n"); // updated header with OrderDate
                 for (Order order : orders.values()) {
                     writer.write(String.join(",",
@@ -299,7 +276,6 @@ public class OrderDaoImpl extends OrderDao {
 
     /**
      * Parses a date from a file name.
-     *
      * @param fileName The name of the file.
      * @return The parsed date.
      */

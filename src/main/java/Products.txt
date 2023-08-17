@@ -1,3 +1,4 @@
+ProductType,CostPerSquareFoot,LaborCostPerSquareFoot
 Tile,3.75,4.30
 Carpet,2.25,2.10
 Terrazzo,6.50,7.10

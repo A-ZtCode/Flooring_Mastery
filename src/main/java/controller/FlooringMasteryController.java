@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import java.time.ZoneId;
@@ -56,9 +57,15 @@ public class FlooringMasteryController {
      * Prompt the user for a date input and convert the string to LocalDate.
      */
     private LocalDate promptForDate() {
-        String dateStr = menuView.getUserInputString("Please enter the order date (MM-dd-yyyy): ");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-        return LocalDate.parse(dateStr, formatter);
+        while (true) {  // Infinite loop until a valid date is entered
+            try {
+                String dateStr = menuView.getUserInputString("Please enter the order date (MM-dd-yyyy): ");
+                return LocalDate.parse(dateStr, formatter);
+            } catch (DateTimeParseException e) {
+                menuView.displayErrorMessage("Invalid date format. Please enter the date in MM-dd-yyyy format.");
+            }
+        }
     }
 
     /**
@@ -136,8 +143,6 @@ public class FlooringMasteryController {
         menuView.displayAvailableStates(availableTaxes);
         while (true) {
             String stateInput = menuView.getUserInputString("Enter state abbreviation from the list: ").toUpperCase();
-            System.out.println("User entered: " + stateInput); // Add this line
-            System.out.println("Available states: " + availableTaxes); // Add this line
             Tax selectedTax = availableTaxes.stream()
                     .filter(tax -> tax.getStateAbbreviation().equalsIgnoreCase(stateInput))
                     .findFirst()
@@ -194,7 +199,7 @@ public class FlooringMasteryController {
                             menuView.displayErrorMessage("No orders exist for the provided date.");
                         } else {
                             menuView.displayOrders(orders);
-      }
+                        }
                         break;
                     case 2: // Add an Order
                         Order orderToAdd = gatherOrderData();
@@ -248,7 +253,7 @@ public class FlooringMasteryController {
     private void exportAllData() {
         System.out.println("Exporting data...");
         try {
-            // Ensure the Backup directory exists
+            // Backup directory
             Files.createDirectories(Paths.get("src/main/java/Backup"));
 
             // Get all the orders
@@ -260,12 +265,11 @@ public class FlooringMasteryController {
                 dataToExport.append(orderToString(order)).append("\n");
             }
 
-            // Write the data to the file
+            // Write  data to the file
             try (FileWriter writer = new FileWriter(EXPORT_FILE_PATH)) {
                 writer.write(dataToExport.toString());
                 writer.flush();  // Ensures all data is written to the file immediately
             }
-            menuView.displayMessage("Data exported successfully to " + EXPORT_FILE_PATH);
         } catch (ServiceException | IOException e) {
             e.printStackTrace();
             menuView.displayErrorMessage("Error exporting data: " + e.getMessage());
